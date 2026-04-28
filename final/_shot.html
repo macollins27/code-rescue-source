@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>shot</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      html, body, #root { margin: 0; background: var(--paper, #fafaf7); }
+      body { font-family: system-ui; }
+    </style>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" src="chrome.jsx"></script>
+    <script type="text/babel" src="home-v3.jsx"></script>
+    <script type="text/babel" src="audit.jsx"></script>
+    <script type="text/babel" src="install.jsx"></script>
+    <script type="text/babel" src="rules.jsx"></script>
+    <script type="text/babel" src="incidents.jsx"></script>
+    <script type="text/babel" src="methodology.jsx"></script>
+    <script type="text/babel" data-presets="react">
+      const MAP = {
+        home: () => <HomeV3 />,
+        audit: () => <AuditFinal />,
+        install: () => <InstallFinal />,
+        rules: () => <RulesFinal />,
+        incidents: () => <IncidentsFinal />,
+        methodology: () => <MethodologyFinal />,
+      };
+      const which = (location.hash || "#home").slice(1);
+      const Comp = MAP[which] || MAP.home;
+      ReactDOM.createRoot(document.getElementById("root")).render(<Comp />);
+      // signal readiness once a frame paints
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        document.body.setAttribute("data-ready", "1");
+      }));
+    </script>
+  </body>
+</html>

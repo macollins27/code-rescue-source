@@ -1,0 +1,12 @@
+dist/
+.astro/
+node_modules/
+.env
+.env.production
+.env.local
+.DS_Store
+.vscode/
+*.log
+.wrangler/
+.claude/settings.local.json
+

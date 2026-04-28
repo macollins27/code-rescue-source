@@ -1,0 +1,81 @@
+---
+import Page from '../layouts/Page.astro';
+import { organization, person, breadcrumbs } from '../lib/jsonld.ts';
+
+const lastEdited = '2026-04-27';
+const url = 'https://code-rescue.com/now';
+
+const jsonLd = [
+  organization(),
+  person(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    url,
+    name: 'Now — Code Rescue',
+    description: 'What I am working on this week.',
+    dateModified: lastEdited,
+    author: { '@id': 'https://code-rescue.com/#max' },
+  },
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Now', url },
+  ]),
+];
+---
+
+<Page
+  title="Now — Code Rescue"
+  description="What I'm working on this week. Building, stuck on, last week."
+  current="now"
+  page="/now"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 56px 48px 24px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      Now · last edited {lastEdited}
+    </div>
+    <h1 style="font-size: 44px; line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 24ch;">
+      What I'm working on this week.
+    </h1>
+    <p class="serif" style="font-size: 16px; color: var(--ink-3); max-width: 60ch; margin-top: 18px; line-height: 1.55;">
+      A <a href="https://nownownow.com/about" rel="external">/now page</a>. Replaced when the state changes — usually weekly, sometimes faster.
+    </p>
+  </section>
+
+  {/* Body — four beats */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">Beats</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px; line-height: 1.5;">
+          Building, stuck on, last week.
+        </div>
+      </div>
+      <div class="serif" style="font-size: 17px; line-height: 1.7; color: var(--ink-2); max-width: 64ch;">
+        <p style="margin: 0 0 1.4em;">
+          <strong style="color: var(--ink);">Building.</strong> Canonical‑identity migration v2 inside the monorepo. Wave 1, layer 0a audit complete; layer 0 retro validation in flight. The migration unifies the parcel resolver, lineage tracking, and dedup paths under one canonical-identity contract — the first time these three have shared a single source of truth in this codebase. The retro validation is the piece I usually underestimate: walking every existing record back through the new resolver to confirm the canonical identifiers it produces today match what the system has been operating on for months.
+        </p>
+        <p style="margin: 0 0 1.4em;">
+          <strong style="color: var(--ink);">Stuck on.</strong> Making <code class="mono" style="font-size: 0.88em;">/frontend-implement</code> reliable enough that one agent can take a wireframe and a tRPC contract and produce production-grade React without a seven-round human review loop. I have no answer yet. The pattern is clear — the failure mode is that the agent over-trusts its first interpretation of the wireframe and under-tests the produced component against the contract it was given. The fix is some combination of stricter dispatch protocol and a different shape of subagent disagreement check, but every structural change I have tried has either added latency without reducing review rounds, or moved the failure to a different layer of the same loop.
+        </p>
+        <p style="margin: 0;">
+          <strong style="color: var(--ink);">Last week.</strong> Re-locked the skill-iteration protocol after a near-regression. The writeup is <a href="/writing">drafting</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* Stamp */}
+  <section class="section tight" style="border-bottom: none;">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">Replaced</div>
+      </div>
+      <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55; max-width: 60ch;">
+        This page is overwritten when the state changes. There is no archive yet — when there is enough history to archive, it will land here. Until then, the most reliable thing on this page is the date in the header and the next thing past <strong style="color: var(--ink);">Stuck on</strong>.
+      </div>
+    </div>
+  </section>
+</Page>

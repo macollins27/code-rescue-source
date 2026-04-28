@@ -1,0 +1,260 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import ThreeLayerTimeline from '../../components/ThreeLayerTimeline.astro';
+import PillTone from '../../components/PillTone.astro';
+import { organization, person, website, breadcrumbs } from '../../lib/jsonld.ts';
+
+const astGrep = (await getCollection('rules-ast-grep')).sort((a, b) =>
+  (a.data.lockedOn < b.data.lockedOn ? 1 : -1)
+);
+const hookify = (await getCollection('rules-hookify')).sort((a, b) =>
+  (a.data.lockedOn < b.data.lockedOn ? 1 : -1)
+);
+const domain = (await getCollection('rules-domain'));
+const sharedDomain = domain.filter((r) => r.data.corpus === 'shared');
+const perDomain = domain.filter((r) => r.data.corpus === 'domain');
+
+const url = 'https://code-rescue.com/rules';
+
+const jsonLd = [
+  organization(),
+  person(),
+  website(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    url,
+    name: 'Code Rescue — public rule corpus',
+    description: 'Three layers of enforcement: ast-grep, hookify, and domain rules. Every entry sourced.',
+    publisher: { '@id': 'https://code-rescue.com/#organization' },
+    isPartOf: { '@id': 'https://code-rescue.com/#website' },
+  },
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Rules', url },
+  ]),
+];
+---
+
+<Page
+  title="Rule corpus — Code Rescue"
+  description="The public rule corpus. Three layers, every entry sourced. ast-grep + hookify enforcement on top of ~13,400 lines of plain-English domain rules."
+  current="rules"
+  page="/rules"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 44px 48px 32px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      Public corpus · open · v0.4.1
+    </div>
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;">
+      <div>
+        <h1 style="font-size: 36px; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; margin: 0; max-width: 26ch;">
+          The rule corpus. Three layers, every entry sourced.
+        </h1>
+        <p class="serif" style="font-size: 17.5px; color: var(--ink-2); max-width: 62ch; margin-top: 20px; line-height: 1.55;">
+          The domain rules are the spec. ~13,400 lines of plain English across 7 cross-cutting contracts and 24 domains — written for a human auditor to read in an afternoon, not a test runner to execute in a thousand. The other two layers are <em>enforcement</em>: ast-grep at edit and gate time, hookify at the keystroke. Their job is to keep the source from drifting from the spec.
+        </p>
+        <p class="serif" style="font-size: 17.5px; color: var(--ink-2); max-width: 62ch; margin-top: 16px; line-height: 1.55;">
+          What's published below is a curated sample — enough to audit the methodology before talking to me. The rest ships with <a href="/install">/install</a>.
+        </p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 18px; font-size: 13px;">
+        <div>
+          <div class="mono" style="font-size: 10px; color: var(--ink-4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Enforcement</div>
+          <table class="data" style="font-size: 13px;">
+            <tbody>
+              <tr><td style="color: var(--ink-4);">ast-grep rules</td><td class="mono" style="text-align: right; color: var(--ink);">41</td></tr>
+              <tr><td style="color: var(--ink-4);">hookify rules</td><td class="mono" style="text-align: right; color: var(--ink);">48</td></tr>
+              <tr><td style="color: var(--ink-4);">Total enforcement</td><td class="mono" style="text-align: right; color: var(--ink); font-weight: 600;">89</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="mono" style="font-size: 10px; color: var(--ink-4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Spec</div>
+          <table class="data" style="font-size: 13px;">
+            <tbody>
+              <tr><td style="color: var(--ink-4);">_shared/ contracts</td><td class="mono" style="text-align: right; color: var(--ink);">7 files</td></tr>
+              <tr><td style="color: var(--ink-4);">Domains in po/, hub/, lsp/</td><td class="mono" style="text-align: right; color: var(--ink);">24</td></tr>
+              <tr><td style="color: var(--ink-4);">Plain-English lines</td><td class="mono" style="text-align: right; color: var(--ink); font-weight: 600;">~13,400</td></tr>
+              <tr><td style="color: var(--ink-4);">Last updated</td><td class="mono" style="text-align: right; color: var(--ink-3);">2026-04-28</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* §1 Three layers */}
+  <section class="section tight">
+    <ThreeLayerTimeline />
+  </section>
+
+  {/* Anchor nav */}
+  <section style="padding: 0 48px;">
+    <div style="display: flex; gap: 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--paper-2);">
+      <a href="#ast-grep" style="flex: 1; border: none; border-right: 1px solid var(--rule); padding: 20px 24px 18px; text-align: left; color: var(--ink); font-weight: 500; background: transparent;">
+        <div style="display: flex; align-items: baseline; gap: 12px;">
+          <span style="font-size: 16px;">ast-grep</span>
+          <span class="mono" style="font-size: 12px; color: var(--accent);">{astGrep.length} of 41</span>
+        </div>
+        <div style="font-size: 11.5px; color: var(--ink-4); font-weight: 400; margin-top: 4px; font-family: var(--mono);">AST patterns · edit + gate + self-test</div>
+      </a>
+      <a href="#hookify" style="flex: 1; border: none; border-right: 1px solid var(--rule); padding: 20px 24px 18px; text-align: left; color: var(--ink); font-weight: 500; background: transparent;">
+        <div style="display: flex; align-items: baseline; gap: 12px;">
+          <span style="font-size: 16px;">hookify</span>
+          <span class="mono" style="font-size: 12px; color: var(--accent);">{hookify.length} of 48</span>
+        </div>
+        <div style="font-size: 11.5px; color: var(--ink-4); font-weight: 400; margin-top: 4px; font-family: var(--mono);">regex · PreToolUse block + PostToolUse warn</div>
+      </a>
+      <a href="#domain" style="flex: 1; border: none; padding: 20px 24px 18px; text-align: left; color: var(--ink); font-weight: 500; background: transparent;">
+        <div style="display: flex; align-items: baseline; gap: 12px;">
+          <span style="font-size: 16px;">Domain rules</span>
+          <span class="mono" style="font-size: 12px; color: var(--accent);">~13,400 lines</span>
+        </div>
+        <div style="font-size: 11.5px; color: var(--ink-4); font-weight: 400; margin-top: 4px; font-family: var(--mono);">7 _shared/ + 24 domains</div>
+      </a>
+    </div>
+  </section>
+
+  {/* ast-grep table */}
+  <section id="ast-grep" class="section tight">
+    <h2 style="margin-bottom: 22px;">ast-grep</h2>
+    <table class="data" style="font-size: 13px;">
+      <thead>
+        <tr>
+          <th style="width: 28%;">Rule ID</th>
+          <th style="width: 10%;">Area</th>
+          <th style="width: 10%;">Severity</th>
+          <th style="width: 12%;">Locked on</th>
+          <th>Origin</th>
+          <th style="width: 8%; text-align: right;">Body</th>
+        </tr>
+      </thead>
+      <tbody>
+        {astGrep.map((r) => (
+          <tr>
+            <td class="mono"><a href={`/rules/${r.id}`} style="color: var(--accent); border-bottom: none;">{r.data.displayId}</a></td>
+            <td class="mono" style="color: var(--ink-3);">{r.data.area}</td>
+            <td><PillTone tone={r.data.severity}>{r.data.severity}</PillTone></td>
+            <td class="mono" style="color: var(--ink-3);">{r.data.lockedOn}</td>
+            <td style="color: var(--ink-3); font-size: 12.5px;">{r.data.origin}</td>
+            <td class="mono" style={`text-align: right; color: ${r.data.verbatim ? 'var(--good)' : 'var(--ink-4)'}; font-size: 11px;`}>
+              {r.data.verbatim ? 'verbatim' : 'summary'}
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td colspan="6" style="color: var(--ink-4); font-style: italic; padding: 14px 0;">
+            {astGrep.length} of 41 published. The remaining {41 - astGrep.length} ship with <a href="/install">/install</a>.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  {/* hookify table */}
+  <section id="hookify" class="section tight" style="background: var(--paper-2);">
+    <h2 style="margin-bottom: 22px;">hookify</h2>
+    <table class="data" style="font-size: 13px;">
+      <thead>
+        <tr>
+          <th style="width: 32%;">Rule ID</th>
+          <th style="width: 10%;">Area</th>
+          <th style="width: 10%;">Action</th>
+          <th style="width: 16%;">Event</th>
+          <th style="width: 12%;">Locked on</th>
+          <th style="width: 8%; text-align: right;">Body</th>
+        </tr>
+      </thead>
+      <tbody>
+        {hookify.map((r) => (
+          <tr>
+            <td class="mono"><a href={`/rules/${r.id}`} style="color: var(--accent); border-bottom: none;">{r.data.displayId}</a></td>
+            <td class="mono" style="color: var(--ink-3);">{r.data.area}</td>
+            <td><PillTone tone={r.data.action}>{r.data.action}</PillTone></td>
+            <td class="mono" style="color: var(--ink-3); font-size: 12px;">{r.data.event}</td>
+            <td class="mono" style="color: var(--ink-3);">{r.data.lockedOn}</td>
+            <td class="mono" style={`text-align: right; color: ${r.data.verbatim ? 'var(--good)' : 'var(--ink-4)'}; font-size: 11px;`}>
+              {r.data.verbatim ? 'verbatim' : 'summary'}
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td colspan="6" style="color: var(--ink-4); font-style: italic; padding: 14px 0;">
+            {hookify.length} of 48 published. The remaining {48 - hookify.length} ship with <a href="/install">/install</a>.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  {/* Domain rules — split shared / per-domain */}
+  <section id="domain" class="section tight">
+    <h2 style="margin-bottom: 8px;">Domain rules</h2>
+    <p class="serif" style="font-size: 15px; color: var(--ink-3); max-width: 64ch; margin: 0 0 24px;">
+      The spec itself. AUTH-N · P-N · PER-N · ERR-N · AL-N · SEC-N · ID-N cross-cutting contracts in <code class="mono" style="font-size: 13px;">_shared/</code>, plus per-domain DR-NNN rules across po/, hub/, lsp/.
+    </p>
+
+    <div style="margin-bottom: 28px;">
+      <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">_shared/ cross-cutting contracts ({sharedDomain.length})</div>
+      <table class="data" style="font-size: 13px;">
+        <thead>
+          <tr>
+            <th style="width: 12%;">ID</th>
+            <th style="width: 20%;">Source file</th>
+            <th style="width: 18%;">Feature</th>
+            <th>Title</th>
+            <th style="width: 15%;">Cited by enforcement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sharedDomain.map((r) => (
+            <tr>
+              <td class="mono"><a href={`/rules/${r.id}`} style="color: var(--accent); border-bottom: none;">{r.data.displayId}</a></td>
+              <td class="mono" style="font-size: 11.5px; color: var(--ink-3);">{r.data.file}</td>
+              <td style="color: var(--ink-3);">{r.data.feature}</td>
+              <td>{r.data.title}</td>
+              <td class="mono" style={`font-size: 11px; color: ${r.data.citedBy.length ? 'var(--good)' : 'var(--ink-4)'};`}>
+                {r.data.citedBy.length ? `${r.data.citedBy.length} rule${r.data.citedBy.length > 1 ? 's' : ''}` : '—'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">Per-domain DR-NNN ({perDomain.length})</div>
+      <table class="data" style="font-size: 13px;">
+        <thead>
+          <tr>
+            <th style="width: 12%;">ID</th>
+            <th style="width: 20%;">Source file</th>
+            <th style="width: 18%;">Feature</th>
+            <th>Title</th>
+            <th style="width: 15%;">Cited by enforcement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {perDomain.map((r) => (
+            <tr>
+              <td class="mono"><a href={`/rules/${r.id}`} style="color: var(--accent); border-bottom: none;">{r.data.displayId}</a></td>
+              <td class="mono" style="font-size: 11.5px; color: var(--ink-3);">{r.data.file}</td>
+              <td style="color: var(--ink-3);">{r.data.feature}</td>
+              <td>{r.data.title}</td>
+              <td class="mono" style={`font-size: 11px; color: ${r.data.citedBy.length ? 'var(--good)' : 'var(--ink-4)'};`}>
+                {r.data.citedBy.length ? `${r.data.citedBy.length} rule${r.data.citedBy.length > 1 ? 's' : ''}` : '—'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p style="font-size: 12.5px; color: var(--ink-4); font-style: italic; margin-top: 14px;">
+        Showing {perDomain.length} representative DR-NNN entries from po/properties.md. The corpus spans 24 domains across po/, hub/, lsp/ — ~13,400 lines of plain English total.
+      </p>
+    </div>
+  </section>
+</Page>

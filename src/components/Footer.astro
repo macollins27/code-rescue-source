@@ -1,0 +1,47 @@
+---
+interface Props {
+  updated?: string;
+  page?: string;
+}
+
+const { updated = '2026-04-28', page = '/' } = Astro.props;
+---
+
+<footer class="footer">
+  <div>
+    <h5>Code Rescue</h5>
+    <div style="font-size: 13px; color: var(--ink-3); max-width: 32ch; line-height: 1.5;">
+      AI-augmented engineering and due-diligence audits for codebases that have to survive review. Operated by Maxwell A. Collins.
+    </div>
+  </div>
+  <div>
+    <h5>Services</h5>
+    <ul>
+      <li><a href="/audit">DRDD Audit</a></li>
+      <li><a href="/install">DRDD Install</a></li>
+      <li><a href="mailto:max@code-rescue.com?subject=Engagement%20inquiry">Engagements</a></li>
+    </ul>
+  </div>
+  <div>
+    <h5>Artifacts</h5>
+    <ul>
+      <li><a href="/methodology">Methodology</a></li>
+      <li><a href="/rules">Rule corpus</a></li>
+      <li><a href="/incidents">Incident catalog</a></li>
+      <li><a href="/docs/codex-audit-sample-report.pdf">Sample audit (PDF)</a></li>
+    </ul>
+  </div>
+  <div>
+    <h5>Reach</h5>
+    <ul>
+      <li><a href="mailto:max@code-rescue.com">max@code-rescue.com</a></li>
+      <li><a href="mailto:max@code-rescue.com?subject=Schedule%20a%20call">Schedule a call</a></li>
+      <li><a href="https://github.com/macollins27" rel="me">github.com/macollins27</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </div>
+  <div class="stamp">
+    <span>Code Rescue LLC · Last updated {updated} · {page}</span>
+    <span>v0.4.1 · Built solo · No trackers</span>
+  </div>
+</footer>

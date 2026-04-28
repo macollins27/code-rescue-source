@@ -1,0 +1,8 @@
+---
+interface Props {
+  severity: 'crit' | 'high' | 'med';
+}
+const { severity } = Astro.props;
+---
+
+<span class={`dot ${severity}`}></span>

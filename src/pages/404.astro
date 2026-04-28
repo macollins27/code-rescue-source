@@ -1,0 +1,47 @@
+---
+import Page from '../layouts/Page.astro';
+---
+
+<Page
+  title="404 — Page not found · Code Rescue"
+  description="Page not found."
+  current=""
+  page="/404"
+>
+  <section style="padding: 80px 48px 60px;">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start; max-width: 900px;">
+      <div>
+        <div class="mono" style="font-size: 11px; color: var(--bad); letter-spacing: 0.12em; text-transform: uppercase;">Status 404</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">No content at this URL.</div>
+      </div>
+      <div>
+        <h1 style="font-size: 44px; line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 22ch;">
+          Page not found.
+        </h1>
+        <p class="serif" style="font-size: 17px; color: var(--ink-2); max-width: 60ch; margin-top: 18px; line-height: 1.55;">
+          The URL you requested has no content on this site. Either the link is wrong, the page was moved, or it never existed. Three places that almost always do exist:
+        </p>
+        <table class="data" style="font-size: 14px; margin-top: 24px; max-width: 56ch;">
+          <tbody>
+            <tr>
+              <td class="mono" style="width: 24%;"><a href="/">/</a></td>
+              <td class="serif" style="color: var(--ink-3);">Site home with the live receipt and the offerings.</td>
+            </tr>
+            <tr>
+              <td class="mono"><a href="/methodology">/methodology</a></td>
+              <td class="serif" style="color: var(--ink-3);">The DRDD manifesto, four commitments, twelve rules, two anatomy specimens.</td>
+            </tr>
+            <tr>
+              <td class="mono"><a href="/rules">/rules</a></td>
+              <td class="serif" style="color: var(--ink-3);">The public rule corpus index — ast‑grep, hookify, domain rules.</td>
+            </tr>
+            <tr>
+              <td class="mono"><a href="/incidents">/incidents</a></td>
+              <td class="serif" style="color: var(--ink-3);">The failure catalog. Each incident produced a permanent rule.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</Page>

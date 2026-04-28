@@ -1,0 +1,127 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import SeverityDot from '../../components/SeverityDot.astro';
+import LayerPill from '../../components/LayerPill.astro';
+import IncidentMoment from '../../components/IncidentMoment.astro';
+import { organization, person, website, breadcrumbs } from '../../lib/jsonld.ts';
+
+const all = (await getCollection('incidents')).sort((a, b) =>
+  a.data.date < b.data.date ? 1 : -1
+);
+const featured = all.filter((i) => i.data.featured);
+
+const url = 'https://code-rescue.com/incidents';
+
+const jsonLd = [
+  organization(),
+  person(),
+  website(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    url,
+    name: 'Code Rescue — incident catalog',
+    description: 'Nine catalogued incidents. Every one produced a permanent rule that now blocks recurrence.',
+    publisher: { '@id': 'https://code-rescue.com/#organization' },
+    isPartOf: { '@id': 'https://code-rescue.com/#website' },
+  },
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Incidents', url },
+  ]),
+];
+---
+
+<Page
+  title="Incident catalog — Code Rescue"
+  description="Nine major incidents in the four months since the methodology locked. Every one has a date, a session id, a root cause, and the rule that now blocks recurrence."
+  current="incidents"
+  page="/incidents"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 44px 48px 32px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      Public catalog · open · v0.4.1
+    </div>
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 56px; align-items: end;">
+      <div>
+        <h1 style="font-size: 44px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 600; margin: 0; max-width: 22ch;">
+          We catalog our failures. Each one becomes a permanent rule.
+        </h1>
+        <p class="serif" style="font-size: 17.5px; color: var(--ink-2); max-width: 60ch; margin-top: 22px; line-height: 1.55;">
+          Nine major incidents in the four months since the methodology locked. Every one has a date, a session id, a root cause, and the rule that now blocks recurrence. Most were caught before a human reviewer ever saw the diff. The cases below are the moment the rule was born.
+        </p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <table class="data" style="font-size: 13px;">
+          <tbody>
+            <tr><td style="color: var(--ink-4);">Catalogued</td><td class="mono" style="text-align: right; color: var(--ink);">{all.length}</td></tr>
+            <tr><td style="color: var(--ink-4);">Caught pre-production</td><td class="mono" style="text-align: right; color: var(--good);">{all.length} / {all.length}</td></tr>
+            <tr><td style="color: var(--ink-4);">Avg time to lock rule</td><td class="mono" style="text-align: right; color: var(--ink);">4 hrs</td></tr>
+            <tr><td style="color: var(--ink-4);">Same-day rule lock</td><td class="mono" style="text-align: right; color: var(--ink);">7 / 9</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  {/* Featured incidents — the "moment" */}
+  <section style="padding: 0 48px;">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; padding: 44px 0 8px;">
+      <div class="label">Featured</div>
+      <div class="serif" style="font-size: 15px; color: var(--ink-3); max-width: 60ch; line-height: 1.55;">
+        Two incidents shown in full. The third beat — the locked rule — is the proof point of the methodology. <em>Failure becomes infrastructure.</em>
+      </div>
+    </div>
+    {featured.map((inc) => (
+      <IncidentMoment incident={inc.data} />
+    ))}
+  </section>
+
+  {/* Full table */}
+  <section class="section tight" style="border-top: 1px solid var(--rule);">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">All incidents</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px; line-height: 1.5;">
+          Showing {all.length} / {all.length}. Featured rows link to the full case.
+        </div>
+      </div>
+      <table class="data" style="font-size: 13px;">
+        <thead>
+          <tr>
+            <th style="width: 12%;">ID</th>
+            <th style="width: 12%;">Date</th>
+            <th style="width: 8%;">Sev</th>
+            <th>Title</th>
+            <th style="width: 20%;">Caught by</th>
+            <th style="width: 14%;">Locked rule</th>
+          </tr>
+        </thead>
+        <tbody>
+          {all.map((inc) => (
+            <tr>
+              <td class="mono">
+                {inc.data.featured ? (
+                  <a href={`/incidents/${inc.id}`} style="color: var(--accent); border-bottom: none;">{inc.data.displayId}</a>
+                ) : (
+                  <span style="color: var(--accent);">{inc.data.displayId}</span>
+                )}
+              </td>
+              <td class="mono" style="color: var(--ink-3);">{inc.data.date}</td>
+              <td>
+                <SeverityDot severity={inc.data.severity} />
+                <span class="mono" style="font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.04em;">{inc.data.severity}</span>
+              </td>
+              <td>{inc.data.title}</td>
+              <td><LayerPill layer={inc.data.caughtBy} /></td>
+              <td class="mono" style="color: var(--accent);">{inc.data.ruleDisplayId}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</Page>

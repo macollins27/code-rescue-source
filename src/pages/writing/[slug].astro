@@ -1,0 +1,185 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { article, organization, person, breadcrumbs } from '../../lib/jsonld.ts';
+
+export async function getStaticPaths() {
+  const all = await getCollection('writing');
+  const published = all
+    .filter((p) => !p.data.draft)
+    .sort((a, b) => (a.data.date < b.data.date ? 1 : -1));
+
+  return published.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      prev: published[i + 1] ?? null,
+      next: published[i - 1] ?? null,
+    },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'writing'>;
+  prev: CollectionEntry<'writing'> | null;
+  next: CollectionEntry<'writing'> | null;
+}
+
+const { post, prev, next } = Astro.props as Props;
+const { Content } = await render(post);
+
+// Estimated word count for read-time
+const body = post.body ?? '';
+const wordCount = body.split(/\s+/).filter(Boolean).length;
+const readMinutes = Math.max(1, Math.round(wordCount / 200));
+
+const url = `https://code-rescue.com/writing/${post.id}`;
+
+const jsonLd = [
+  organization(),
+  person(),
+  article({
+    type: 'BlogPosting',
+    url,
+    headline: post.data.title,
+    description: post.data.description,
+    datePublished: post.data.date,
+    dateModified: post.data.date,
+    wordCount,
+    keywords: post.data.tags,
+    articleSection: 'Writing',
+  }),
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Writing', url: 'https://code-rescue.com/writing' },
+    { name: post.data.title, url },
+  ]),
+];
+---
+
+<Page
+  title={`${post.data.title} — Code Rescue`}
+  description={post.data.description}
+  current="writing"
+  page={`/writing/${post.id}`}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 56px 48px 32px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      <a href="/writing" style="color: var(--ink-4); border-bottom: none;">Writing</a>
+      <span style="margin: 0 8px;">·</span>
+      <span>{post.data.date}</span>
+      <span style="margin: 0 8px;">·</span>
+      <span>{readMinutes} min read</span>
+    </div>
+    <h1 style="font-size: 40px; line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 26ch;">
+      {post.data.title}
+    </h1>
+    {post.data.tags.length > 0 && (
+      <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+        {post.data.tags.map((t) => (
+          <span class="mono" style="font-size: 11px; color: var(--ink-4);">#{t}</span>
+        ))}
+      </div>
+    )}
+  </section>
+
+  {/* Body */}
+  <section style="padding: 48px 48px 40px;">
+    <article class="post-body">
+      <Content />
+    </article>
+  </section>
+
+  {/* Footer nav */}
+  <section style="padding: 32px 48px 48px; border-top: 1px solid var(--rule); background: var(--paper-2);">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: start;">
+      <div>
+        {prev && (
+          <>
+            <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">← Older</div>
+            <a href={`/writing/${prev.id}`} style="font-size: 15px; color: var(--ink); border-bottom: none;">{prev.data.title}</a>
+            <div class="mono" style="font-size: 11px; color: var(--ink-4); margin-top: 4px;">{prev.data.date}</div>
+          </>
+        )}
+      </div>
+      <div style="text-align: center;">
+        <a href="/writing" class="mono" style="font-size: 12px; color: var(--ink-3);">all writing →</a>
+      </div>
+      <div style="text-align: right;">
+        {next && (
+          <>
+            <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px;">Newer →</div>
+            <a href={`/writing/${next.id}`} style="font-size: 15px; color: var(--ink); border-bottom: none;">{next.data.title}</a>
+            <div class="mono" style="font-size: 11px; color: var(--ink-4); margin-top: 4px;">{next.data.date}</div>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style is:global>
+  .post-body {
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    max-width: 64ch;
+    margin: 0 auto;
+  }
+  .post-body p { margin: 0 0 1.1em; }
+  .post-body strong { color: var(--ink); font-weight: 600; }
+  .post-body em { font-style: italic; }
+  .post-body code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--paper-2);
+    padding: 1px 4px;
+    border-radius: 2px;
+    color: var(--ink);
+  }
+  .post-body a {
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+  }
+  .post-body a:hover { background: var(--accent-tint); }
+  .post-body h2 {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 1.8em 0 0.6em;
+  }
+  .post-body h3 {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 1.6em 0 0.5em;
+  }
+  .post-body blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 1.4em 0;
+    padding: 0.2em 0 0.2em 18px;
+    color: var(--ink-3);
+    font-style: italic;
+  }
+  .post-body pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 14px 16px;
+    overflow: auto;
+    margin: 1.2em 0;
+  }
+  .post-body pre code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+  }
+</style>

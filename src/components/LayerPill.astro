@@ -1,0 +1,15 @@
+---
+interface Props {
+  layer: string;
+}
+const { layer } = Astro.props;
+
+let style = { color: 'var(--ink-3)', borderColor: 'var(--rule-2)' };
+if (layer.startsWith('ast-grep')) style = { color: 'var(--accent)', borderColor: 'var(--accent)' };
+else if (layer.startsWith('hookify')) style = { color: 'var(--warn)', borderColor: 'var(--warn)' };
+else if (layer.startsWith('QA harness')) style = { color: 'var(--good)', borderColor: 'var(--good)' };
+else if (layer.startsWith('agent-review') || layer.startsWith('agent‑review'))
+  style = { color: 'var(--ink-2)', borderColor: 'var(--rule-2)' };
+---
+
+<span class="pill" style={`color: ${style.color}; border-color: ${style.borderColor};`}>{layer}</span>

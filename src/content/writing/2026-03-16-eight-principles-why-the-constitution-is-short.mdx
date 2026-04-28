@@ -1,0 +1,16 @@
+---
+title: "Eight principles. Why the constitution is short."
+description: "The constitution at the root of every DRDD-installed repo has eight principles. It is short by design. Long constitutions fail in agent context. Compliance with prose decays with context length. The number is a working-memory budget, not a philosophical preference."
+date: "2026-03-16"
+tags: ["methodology", "constitution", "agent-context", "discipline"]
+---
+
+The constitution at the root of every DRDD‑installed repo has eight principles. It is not a long document. It can be read in under two minutes, and it is — by design — short enough that an agent can hold every principle in working memory at the same time as it is reading any other file in the codebase.
+
+This is not a stylistic choice. Long constitutions fail in agent context. Compliance with prose specifications decays with context length, in a curve that rises sharply once the document passes a few thousand tokens. By the middle of a session, an agent is referring to the constitution from a fragmented internal model. By the end, it is making decisions as if the document had never been read. The longer the constitution, the steeper the curve.
+
+**The discipline is in what does not make the cut.** A constitution principle has to be load‑bearing. Every rule in the corpus cites at least one constitution principle by identifier. Every gate failure traces to a constitution‑level breach. Every locked decision in the system stops, eventually, at one of the eight. If a candidate principle does not have at least one descendant rule that depends on it, it is not yet a constitution principle — it is an opinion, and opinions live elsewhere.
+
+**Eight is the ceiling, not a target.** I tried longer constitutions and walked them back. The reason is mechanical: past a certain length, the document crosses the size at which I, reading it cold, can no longer hold all of it while reading a procedure. If I cannot do it, an agent cannot do it. The number is a working‑memory budget. I would go shorter if I could.
+
+**The consequence.** The constitution is not the methodology paper. The [methodology paper](/methodology) is the frame — twelve rules of a domain rule, four commitments, two anatomy specimens — and answers a different audience. The constitution is the executable subset: eight principles, two minutes of reading, every one of them cited from elsewhere in the system. The methodology paper is for humans who are deciding whether to adopt. The constitution is for agents who already have.

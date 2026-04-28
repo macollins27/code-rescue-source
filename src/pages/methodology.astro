@@ -1,0 +1,296 @@
+---
+import Page from '../layouts/Page.astro';
+import RuleCard from '../components/RuleCard.astro';
+import AnatomySlot from '../components/AnatomySlot.astro';
+import { commitments, twelveRules } from '../data/methodology.ts';
+import { article, organization, person, website, breadcrumbs } from '../lib/jsonld.ts';
+
+const url = 'https://code-rescue.com/methodology';
+
+const jsonLd = [
+  organization(),
+  person(),
+  website(),
+  article({
+    type: 'TechArticle',
+    url,
+    headline: 'Domain-Rules-Driven Development — DRDD Manifesto v2',
+    description:
+      'The methodology, as written. The rule set, not the code, is the source of truth. Four commitments, twelve rules, two anatomy specimens.',
+    datePublished: '2026-04-11',
+    dateModified: '2026-04-28',
+    keywords: ['DRDD', 'domain rules', 'AI-augmented engineering', 'software due diligence', 'specification'],
+    articleSection: 'Methodology',
+  }),
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Methodology', url },
+  ]),
+];
+---
+
+<Page
+  title="DRDD Manifesto v2 — Code Rescue"
+  description="Domain-Rules-Driven Development. Four commitments, twelve rules, two anatomy specimens. The methodology, as written."
+  current="methodology"
+  page="/methodology"
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 44px 48px 32px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      DRDD Manifesto · v2 · locked 2026‑04‑11
+    </div>
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;">
+      <div>
+        <h1 style="font-size: 44px; line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 22ch;">
+          Domain‑Rules‑Driven Development.
+        </h1>
+        <p class="serif" style="font-size: 18px; color: var(--ink-2); max-width: 44ch; margin-top: 22px; line-height: 1.5; margin-bottom: 0;">
+          The methodology, as written. The rule set, not the code, is the source of truth. The code is either in compliance, or wrong.
+        </p>
+      </div>
+      <table class="data" style="font-size: 13px;">
+        <tbody>
+          <tr><td style="color: var(--ink-4);">Version</td><td class="mono" style="text-align: right; color: var(--ink);">v2</td></tr>
+          <tr><td style="color: var(--ink-4);">Locked</td><td class="mono" style="text-align: right; color: var(--ink);">2026‑04‑11</td></tr>
+          <tr><td style="color: var(--ink-4);">Read time</td><td class="mono" style="text-align: right; color: var(--ink);">~17 min</td></tr>
+          <tr><td style="color: var(--ink-4);">Commitments</td><td class="mono" style="text-align: right; color: var(--ink);">4</td></tr>
+          <tr><td style="color: var(--ink-4);">Rules</td><td class="mono" style="text-align: right; color: var(--ink);">12</td></tr>
+          <tr><td style="color: var(--ink-4);">Anatomy specimens</td><td class="mono" style="text-align: right; color: var(--ink);">2</td></tr>
+          <tr><td style="color: var(--ink-4);">Cited by</td><td class="mono" style="text-align: right; color: var(--ink);">every locked rule</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {/* §1 Why this exists */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§1 Why this exists</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">The problem the methodology defeats.</div>
+      </div>
+      <div class="prose">
+        <p>
+          In contemporary AI‑augmented software engineering, a specification is treated as an input to code generation. The methodology advances by making the specification better — longer, more precise, structured as decision records or acceptance criteria — on the expectation that sufficient detail produces correct code.
+        </p>
+        <p>
+          This expectation is wrong. A specification treated as an input is read once, referenced imperfectly, and quietly overruled by the code written against it. Agent compliance with prose rules decays with context length — high at the start of a session, fragmented by the middle, effectively absent by the end. Defect densities, security‑vulnerability rates, and rates of silent fabrication rise in proportion to the distance between the specification's form and the machinery that enforces it.
+        </p>
+        <p>
+          The gap is not closed by writing better specifications. It is closed by changing what a specification is. A domain rule is a specification in a form that can be mechanically verified, cited by every procedure that depends on it, and enforced at every boundary where violation could occur. The rule set, not the code, is the source of truth. The code is either in compliance, or wrong.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* §2 Four commitments */}
+  <section class="section tight" style="background: var(--paper-2);">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§2 Four commitments</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">The methodology rests here.</div>
+      </div>
+      <div>
+        <p class="serif" style="font-size: 16px; color: var(--ink-3); line-height: 1.6; margin-top: 0; margin-bottom: 22px; max-width: 62ch;">
+          Domain‑Rules‑Driven Development rests on four commitments. The items on the right are not rejected. They are insufficient for software produced by agents that are not themselves bound by the specification.
+        </p>
+        <table class="data" style="font-size: 14px;">
+          <tbody>
+            {commitments.map((c, i) => (
+              <tr>
+                <td class="mono" style="width: 8%; color: var(--ink-4);">{String(i + 1).padStart(2, '0')}</td>
+                <td style="font-size: 17px; color: var(--ink); font-weight: 600;">{c.lead}</td>
+                <td class="serif" style="font-size: 16px; color: var(--ink-3); font-style: italic;">{c.body}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  {/* §3 Twelve rules */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§3 The twelve rules</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Of a domain rule.</div>
+      </div>
+      <div>
+        <p class="serif" style="font-size: 16px; color: var(--ink-3); line-height: 1.6; margin-top: 0; margin-bottom: 8px; max-width: 62ch;">
+          Each rule below specifies a property a domain rule must satisfy to qualify as a specification. A rule failing any of the twelve is not a rule — it is a wish, an opinion, or a policy statement. The discipline begins at the moment of writing.
+        </p>
+        {twelveRules.map((rule) => <RuleCard rule={rule} />)}
+      </div>
+    </div>
+  </section>
+
+  {/* §4 Anatomy */}
+  <section class="section tight" style="background: var(--paper-2);">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§4 Anatomy</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Two specimens. Six fixed slots.</div>
+      </div>
+      <div>
+        <p class="serif" style="font-size: 16px; color: var(--ink-3); line-height: 1.6; margin-top: 0; margin-bottom: 24px; max-width: 62ch;">
+          A worked specimen. The following rule is canonical and governs approximately every entity access in a cross‑organizationally scoped system.
+        </p>
+
+        {/* AUTH-5 */}
+        <div style="border: 1px solid var(--rule); background: var(--paper); padding: 22px 26px; margin-bottom: 28px;">
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--rule);">
+            <span class="mono" style="font-size: 13px; font-weight: 600; color: var(--accent);">AUTH‑5</span>
+            <span style="font-size: 16px; font-weight: 600; color: var(--ink);">Cross‑organization access</span>
+            <span class="pill" style="margin-left: auto;">adversarial</span>
+          </div>
+
+          <AnatomySlot label="Origin">
+            Resolution of audit finding HC‑1 (2026‑04‑07 authority‑hierarchy lockdown). Supersedes earlier <code class="mono" style="font-size: 13px;">FORBIDDEN "Access denied"</code> pattern. Prior pattern leaked entity existence to cross‑organization probes.
+          </AnatomySlot>
+
+          <AnatomySlot label="Text">
+            Every single‑entity fetch MUST include <code class="mono" style="font-size: 13px;">organizationId = ctx.session.activeOrganizationId</code> in the SQL WHERE clause. If the query returns zero rows, throw <code class="mono" style="font-size: 13px;">NOT_FOUND "&lt;Entity&gt; not found"</code>. Never use <code class="mono" style="font-size: 13px;">FORBIDDEN "Access denied"</code> — that error leaks entity existence.
+          </AnatomySlot>
+
+          <AnatomySlot label="Testable assertion">
+            <pre class="code" style="font-size: 12px; padding: 12px 14px; margin: 0; line-height: 1.5;">{`expect(error.code).toBe("NOT_FOUND");
+expect(error.message).toBe("<Entity> not found");
+// for any request crossing an organization boundary,
+// regardless of whether the entity exists, is soft-deleted,
+// or belongs to another organization.`}</pre>
+          </AnatomySlot>
+
+          <AnatomySlot label="Enforcement">
+            <table class="data" style="font-size: 13px; margin-top: 4px;">
+              <tbody>
+                <tr>
+                  <td class="mono" style="width: 22%; color: var(--accent);">Write‑time</td>
+                  <td>hookify rule blocks the string <code class="mono" style="font-size: 12px;">FORBIDDEN "Access denied"</code> in any procedure file.</td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color: var(--accent);">Gate‑time</td>
+                  <td>static‑analysis rule requires <code class="mono" style="font-size: 12px;">organizationId</code> in every WHERE clause touching an organization‑scoped table.</td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color: var(--accent);">Runtime</td>
+                  <td>middleware verifies session and active organization before procedure body executes.</td>
+                </tr>
+              </tbody>
+            </table>
+          </AnatomySlot>
+
+          <AnatomySlot label="Violation closed">
+            Three distinct failure cases — entity does not exist, entity was soft‑deleted, entity belongs to another organization — collapse into a single response. A probing client observes identical output for all three. Enumeration across organizational boundaries ceases to be possible. The rule turns a class of information‑disclosure vulnerability into a form the attacker cannot distinguish from a correctly‑operating system.
+          </AnatomySlot>
+        </div>
+
+        {/* PER-7 */}
+        <p class="serif" style="font-size: 16px; color: var(--ink-3); line-height: 1.6; margin-top: 0; margin-bottom: 24px; max-width: 62ch;">
+          A second specimen, to demonstrate that the form generalizes across concern types.
+        </p>
+
+        <div style="border: 1px solid var(--rule); background: var(--paper); padding: 22px 26px;">
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--rule);">
+            <span class="mono" style="font-size: 13px; font-weight: 600; color: var(--accent);">PER‑7</span>
+            <span style="font-size: 16px; font-weight: 600; color: var(--ink);">Money persistence</span>
+            <span class="pill" style="margin-left: auto;">spec</span>
+          </div>
+
+          <AnatomySlot label="Origin">
+            Commit <code class="mono" style="font-size: 13px;">4d07fe2</code> (money‑column migration to <code class="mono" style="font-size: 13px;">bigint</code>). The prior <code class="mono" style="font-size: 13px;">integer</code> type silently overflowed on asset values above $21,474,836.47 — a threshold crossed routinely by luxury residential, commercial, and institutional real‑estate records.
+          </AnatomySlot>
+
+          <AnatomySlot label="Text">
+            Money columns MUST be PostgreSQL <code class="mono" style="font-size: 13px;">bigint</code> with Zod input validator <code class="mono" style="font-size: 13px;">z.number().int().min(0).max(Number.MAX_SAFE_INTEGER)</code>. The types <code class="mono" style="font-size: 13px;">integer</code>, <code class="mono" style="font-size: 13px;">numeric</code>, and <code class="mono" style="font-size: 13px;">real</code> — and any floating‑point representation — are FORBIDDEN. Currency values are stored as integer cents.
+          </AnatomySlot>
+
+          <AnatomySlot label="Testable assertion">
+            <pre class="code" style="font-size: 12px; padding: 12px 14px; margin: 0; line-height: 1.5;">{`expect(result.valueCents).toBe(9_007_199_254_740_991);
+// round-trips through the database without precision loss.
+
+expect(() => create({ valueCents: Number.MAX_SAFE_INTEGER + 1 }))
+  .rejects.toThrow();
+// on out-of-range input.`}</pre>
+          </AnatomySlot>
+
+          <AnatomySlot label="Enforcement">
+            <table class="data" style="font-size: 13px; margin-top: 4px;">
+              <tbody>
+                <tr>
+                  <td class="mono" style="width: 22%; color: var(--accent);">Gate‑time</td>
+                  <td>static‑analysis rule forbids <code class="mono" style="font-size: 12px;">integer</code> on money columns; forbids <code class="mono" style="font-size: 12px;">parseFloat</code> and <code class="mono" style="font-size: 12px;">toFixed</code> on money values; forbids floating‑point arithmetic on money variables.</td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color: var(--accent);">Runtime</td>
+                  <td>Zod bound rejects over‑range input at the procedure entry, before any database interaction.</td>
+                </tr>
+              </tbody>
+            </table>
+          </AnatomySlot>
+
+          <AnatomySlot label="Violation closed">
+            Silent overflow on any asset valued above the int32 ceiling. The failure mode is invisible at small scales — most records fit — and catastrophic at production scale: a single corrupted valuation destroys a derived report, a tax filing, or a portfolio summary. The bound is aligned to JavaScript's safe‑integer ceiling rather than PostgreSQL's <code class="mono" style="font-size: 13px;">bigint</code> ceiling, to prevent precision loss when values cross the API boundary.
+          </AnatomySlot>
+        </div>
+
+        <p class="serif" style="font-size: 16px; color: var(--ink-3); line-height: 1.6; margin-top: 24px; max-width: 62ch;">
+          Two specimens, two concern types, one form. Every domain rule follows the same structure: layer, origin, text, testable assertion, enforcement, violation closed. A rule missing any of the six components is incomplete and cannot be mechanically enforced. A rule file, a domain, and a product are collections of such units, organized by the principles above.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* §5 Provenance */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§5 Provenance</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Where this came from.</div>
+      </div>
+      <div class="prose">
+        <p>
+          The methodology described in this document is extracted from the construction of a working specification system: forty‑two domain‑rules files, approximately four thousand rules across twenty‑four domains, a five‑layer enforcement stack (identity file, write‑time hooks, gate‑time static analysis, lifecycle hooks, persistent memory), and an audit history of approximately one thousand findings resolved against the rules they named. The rules govern authentication, persistence, identifiers, errors, audit logging, permissions, and security primitives at the shared tier, and every product domain that references them.
+        </p>
+        <p>
+          This document is the frame. The rule set is the substance. Every rule, every enforcement artifact, every litmus test, every adversarial case, every worked counter‑example — those are what the methodology is made of. They are published as they are written.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* §6 Next */}
+  <section class="section tight" style="background: var(--paper-2); border-bottom: none;">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§6 Next</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px;">
+        <div style="border-top: 2px solid var(--ink); padding-top: 14px;">
+          <div style="font-size: 17px; font-weight: 600; margin-bottom: 6px;">Read the constitution</div>
+          <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 14px;">
+            The eight non‑negotiable principles every DRDD repo carries at its root. Read in two minutes; cited from every locked rule and gate.
+          </div>
+          <a href="/constitution">/constitution →</a>
+        </div>
+        <div style="border-top: 2px solid var(--rule-2); padding-top: 14px;">
+          <div style="font-size: 17px; font-weight: 600; margin-bottom: 6px;">Browse the public corpus</div>
+          <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 14px;">
+            The published rule sample — the methodology compiled to executable form. ast‑grep + hookify, every entry locked with origin and enforcement layer.
+          </div>
+          <a href="/rules">/rules →</a>
+        </div>
+        <div style="border-top: 2px solid var(--rule-2); padding-top: 14px;">
+          <div style="font-size: 17px; font-weight: 600; margin-bottom: 6px;">Read the failure catalog</div>
+          <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 14px;">
+            The incidents that produced the corpus. Each entry: what failed, how it was caught, the rule that now blocks recurrence.
+          </div>
+          <a href="/incidents">/incidents →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

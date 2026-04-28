@@ -1,0 +1,23 @@
+---
+type Tone = 'error' | 'warn' | 'block' | 'spec' | 'cross-cutting' | 'adversarial';
+
+interface Props {
+  tone: Tone | string;
+}
+
+const tones: Record<string, { color: string; border: string }> = {
+  error: { color: 'var(--bad)', border: 'var(--bad)' },
+  warn: { color: 'var(--warn)', border: 'var(--warn)' },
+  block: { color: 'var(--bad)', border: 'var(--bad)' },
+  spec: { color: 'var(--accent)', border: 'var(--accent)' },
+  'cross-cutting': { color: 'var(--accent)', border: 'var(--accent)' },
+  adversarial: { color: 'var(--bad)', border: 'var(--bad)' },
+};
+
+const { tone } = Astro.props;
+const t = tones[tone] ?? { color: 'var(--ink-3)', border: 'var(--rule-2)' };
+---
+
+<span class="pill" style={`color: ${t.color}; border-color: ${t.border};`}>
+  <slot />
+</span>

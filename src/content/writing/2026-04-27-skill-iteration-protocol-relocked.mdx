@@ -1,0 +1,32 @@
+---
+title: "Skill-iteration protocol, re-locked."
+description: "Between 2026-04-19 and 2026-04-25, /contract-feature spiraled across 25 iterations. The contract grew 5,750 → 6,708 lines. Findings inflated from ~25 to 750+. Six days lost. The cause was an integrity violation, not the act of fixing the skill — agents modifying parts that weren't broken. The protocol that came out of it."
+date: "2026-04-27"
+tags: ["methodology", "skill-iteration", "agent-discipline", "feynman", "integrity"]
+---
+
+Between 2026-04-19 and 2026-04-25, the `/contract-feature` skill produced a contract that the seven-agent review panel kept finding defects in. Successive agents tried to fix them. Each one invoked Feynman's first principle — trace the defect to its source, fix the source, do not paper over the symptom downstream — and concluded that the source was the skill itself: the `SKILL.md`, the parser, the injector, the script. That conclusion was correct. The skill *was* producing defective output. Fixing it *was* the right move.
+
+The method was wrong.
+
+**What went wrong.** Each agent, while diagnosing the actual failure, took the opportunity to also modify parts of the skill that were not broken — for shits and giggles, was how I named it later. They cleaned up working sections. They refactored prompts that were producing correct output. They tightened wording in places where the wording was already fine. Each unjustified modification regressed something that had previously worked. The next agent inherited a worse tool, ran the pipeline, found new defects — caused by the prior agent's regressions — and repeated the pattern.
+
+Twenty-five iterations later, the contract had grown 5,750 → 6,708 lines, and findings had inflated from ~25 to 750+. The tool was destroyed. Six days were lost.
+
+**The cause was an integrity violation, not the act of fixing the skill.** The act of fixing the skill is correct, necessary, required. What is forbidden is modifying parts that aren't broken.
+
+**The principle, re-locked on 2026-04-27.**
+
+> Never modify something that is not broken.
+
+That sentence is the operating constraint when iterating on any prompt, skill, or script that an AI runs against. It applies to every line of every file every time. Working code stays untouched. Only the lines responsible for the diagnosed defect change. Every modified line carries documented justification. Every non-modified line in the touched area carries a documented "why it stays."
+
+**The 9-step protocol** expands the four-step framework — analyze failures → analyze skill → test scenarios → update — into operational steps that survive an exhausted agent at iteration 18 of a 25-iteration session. Step 0 is a cap check: if this is the third attempt on the same finding class, stop and escalate. Step 1.5 rules out non-skill causes — contract bug, input bug, context-budget bug, founder-decision bug — because the urge to modify the skill is strongest when the diagnosis hasn't been pinned down. Step 2 requires confirmation by an independent fresh-context observer; an agent that has already lived inside the failure is the worst-positioned reviewer of its own diagnosis. Step 4 requires three test cases: old skill against failing input (proves the bug), new skill against failing input (proves the fix), new skill against an *already-working* input (proves the regression check). Step 5 forces the diff justification artifact: every modified line documented, every non-modified line in the touched area also documented. The cost of articulating "why it stays" is what kills motivated cleanup.
+
+**Forbidden phrases.** Any of these in a dispatch output, commit message, or agent transcript is grounds to reject the dispatch and re-diagnose: "while I'm here," "let me clean this up," "improve the structure," "refactor for clarity," "tighten the wording," "for consistency." They are not vague style preferences. They are tells. They signal that the agent has already decided to modify code it has not diagnosed as broken, and is reaching for a cover story.
+
+**Feynman's other line, the one that matters here.** *You must not fool yourself, and you are the easiest person to fool.* It applies hardest at the moment the agent has permission to modify the tool. The discipline of integrity is the discipline of resisting the cleanup that no failing test demanded.
+
+The protocol is the sole source of truth on this question in the codebase that produced it. It supersedes every prior framing — including a previous version of the same discipline that banned the phrase "fix the skill" outright, which was wrong; skills that produce wrong output **must** be fixed at the source, and a discipline that bans the verb is contradictory. The job is to fix the skill, with integrity. Step 0's cap is the safety net.
+
+The next 25-iteration spiral already exists somewhere in the codebase, latent, waiting for someone to start "tightening the wording." This time it gets caught at attempt three.

@@ -1,0 +1,244 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import PillTone from '../../components/PillTone.astro';
+import { article, organization, person, breadcrumbs } from '../../lib/jsonld.ts';
+
+type AnyRule =
+  | (CollectionEntry<'rules-ast-grep'> & { _kind: 'ast-grep' })
+  | (CollectionEntry<'rules-hookify'> & { _kind: 'hookify' })
+  | (CollectionEntry<'rules-domain'> & { _kind: 'domain' });
+
+export async function getStaticPaths() {
+  const ag = await getCollection('rules-ast-grep');
+  const hk = await getCollection('rules-hookify');
+  const dm = await getCollection('rules-domain');
+
+  return [
+    ...ag.map((r) => ({ params: { id: r.id }, props: { rule: { ...r, _kind: 'ast-grep' as const } } })),
+    ...hk.map((r) => ({ params: { id: r.id }, props: { rule: { ...r, _kind: 'hookify' as const } } })),
+    ...dm.map((r) => ({ params: { id: r.id }, props: { rule: { ...r, _kind: 'domain' as const } } })),
+  ];
+}
+
+const { rule } = Astro.props as { rule: AnyRule };
+const { Content } = await render(rule);
+
+// Build a global lookup from displayId / slug → URL for cross-links.
+const ag = await getCollection('rules-ast-grep');
+const hk = await getCollection('rules-hookify');
+const dm = await getCollection('rules-domain');
+const lookup = new Map<string, { slug: string; displayId: string }>();
+for (const r of [...ag, ...hk, ...dm]) {
+  lookup.set(r.id, { slug: r.id, displayId: r.data.displayId });
+  lookup.set(r.data.displayId, { slug: r.id, displayId: r.data.displayId });
+  lookup.set(r.data.displayId.toLowerCase(), { slug: r.id, displayId: r.data.displayId });
+}
+
+const isAst = rule._kind === 'ast-grep';
+const isHook = rule._kind === 'hookify';
+const isDomain = rule._kind === 'domain';
+
+const tabLabel = isAst ? 'ast-grep' : isHook ? 'hookify' : 'Domain rules';
+const url = `https://code-rescue.com/rules/${rule.id}`;
+
+// Cross-linkable lists
+const cites: string[] = isDomain ? [] : (rule.data as { cites?: string[] }).cites ?? [];
+const citedBy: string[] = isDomain ? rule.data.citedBy : [];
+
+const lockedOn = isDomain ? '2026-04-11' : rule.data.lockedOn;
+const dateModified = isDomain && rule.data.rewritten ? rule.data.rewritten : lockedOn;
+
+const jsonLd = [
+  organization(),
+  person(),
+  article({
+    type: 'TechArticle',
+    url,
+    headline: `${rule.data.displayId} — ${isDomain ? rule.data.title : rule.data.gloss}`,
+    description: isDomain ? rule.data.title : rule.data.gloss,
+    datePublished: lockedOn,
+    dateModified,
+    keywords: [
+      isAst ? 'ast-grep' : isHook ? 'hookify' : 'domain rule',
+      isDomain ? rule.data.feature : rule.data.area,
+    ],
+    articleSection: 'Rule corpus',
+  }),
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Rules', url: 'https://code-rescue.com/rules' },
+    { name: rule.data.displayId, url },
+  ]),
+];
+
+const headlineDesc = isDomain
+  ? rule.data.title
+  : (rule.data as { gloss: string }).gloss;
+
+const pageTitle = `${rule.data.displayId} · ${tabLabel} — Code Rescue`;
+const pageDesc = headlineDesc;
+
+// Fires-at timeline data
+type Stop = 'pre' | 'post' | 'gate' | 'static';
+const firesAtStops: Stop[] = isAst
+  ? ['post', 'gate', 'static']
+  : isHook
+  ? (rule.data as { action: string }).action === 'block' ? ['pre'] : ['post']
+  : [];
+const firesAtPalette = isAst
+  ? 'var(--accent)'
+  : isHook && (rule.data as { action: string }).action === 'block'
+  ? 'var(--bad)'
+  : 'var(--warn)';
+---
+
+<Page
+  title={pageTitle}
+  description={pageDesc}
+  current="rules"
+  page={`/rules/${rule.id}`}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  {/* Breadcrumb */}
+  <div style="padding: 20px 48px 0; border-top: 1px solid var(--rule); background: var(--paper-2);">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px;">
+      <div class="mono" style="font-size: 11.5px; color: var(--ink-3); letter-spacing: 0.04em;">
+        <a href="/rules" style="color: var(--ink-3); border-bottom: none;">/rules</a>
+        <span style="color: var(--ink-4); margin: 0 8px;">›</span>
+        <a href={`/rules#${rule._kind}`} style="color: var(--ink-3); border-bottom: none;">{tabLabel}</a>
+        <span style="color: var(--ink-4); margin: 0 8px;">›</span>
+        <span style="color: var(--accent);">{rule.data.displayId}</span>
+      </div>
+      <a href="/rules" class="mono" style="border: 1px solid var(--rule-2); background: var(--paper); padding: 6px 14px; font-size: 11.5px; color: var(--ink-2); font-family: var(--mono); border-bottom: 1px solid var(--rule-2);">← back to all rules</a>
+    </div>
+  </div>
+
+  {/* Header */}
+  <section style="padding: 32px 48px 28px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; color: var(--ink-4); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px;">
+      {isAst && `ast-grep · ${(rule.data as { language: string }).language} · locked ${rule.data.lockedOn}`}
+      {isHook && `hookify · ${(rule.data as { event: string }).event} · locked ${rule.data.lockedOn}`}
+      {isDomain && `${rule.data.corpus === 'shared' ? '_shared/ cross-cutting contract' : 'domain rule'} · ${rule.data.file}${rule.data.rewritten ? ` · rewritten ${rule.data.rewritten}` : ''}`}
+    </div>
+    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;">
+      <h1 style="font-size: 32px; font-weight: 600; font-family: var(--mono); color: var(--accent); margin: 0; letter-spacing: -0.01em;">{rule.data.displayId}</h1>
+      {isAst && <PillTone tone={(rule.data as { severity: string }).severity}>{(rule.data as { severity: string }).severity}</PillTone>}
+      {isHook && <PillTone tone={(rule.data as { action: string }).action}>{(rule.data as { action: string }).action}</PillTone>}
+      {isDomain && <PillTone tone={rule.data.tag}>{rule.data.tag}</PillTone>}
+    </div>
+    {isDomain && (
+      <h2 style="font-size: 22px; font-weight: 600; margin-top: 12px; letter-spacing: -0.01em; max-width: 60ch; line-height: 1.25;">{rule.data.title}</h2>
+    )}
+    {(isAst || isHook) && (
+      <p class="serif" style="font-size: 17px; color: var(--ink-2); margin-top: 12px; max-width: 70ch; line-height: 1.5;">{(rule.data as { gloss: string }).gloss}</p>
+    )}
+  </section>
+
+  {/* Two-column body */}
+  <section style="padding: 36px 48px 48px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: start;">
+    {/* LEFT — the rule itself */}
+    <div>
+      {(isAst || isHook) && (
+        <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">
+          {isAst ? 'The rule' : 'Frontmatter & body'}
+        </div>
+      )}
+      {isDomain && (
+        <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">The rule</div>
+      )}
+
+      {(rule.data as { verbatim?: boolean }).verbatim || isDomain ? (
+        <div class={isDomain ? 'prose' : ''} style={isDomain ? 'font-size: 15px; line-height: 1.7; max-width: 62ch;' : ''}>
+          <Content />
+        </div>
+      ) : (
+        <div style="padding: 24px; border: 1px dashed var(--rule-2); color: var(--ink-4); font-size: 13px; font-family: var(--mono); line-height: 1.6;">
+          Full source not yet ported into the public corpus index. Origin documented — see right column. The rest of this rule's body ships with <a href="/install">/install</a>.
+        </div>
+      )}
+    </div>
+
+    {/* RIGHT — metadata sidebar */}
+    <aside style="display: flex; flex-direction: column; gap: 28px; padding-left: 32px; border-left: 1px solid var(--rule);">
+      {/* Why this exists */}
+      <div>
+        <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">Why this exists</div>
+        <div class="serif" style="font-size: 13.5px; color: var(--ink-2); line-height: 1.6;">
+          {(isAst || isHook) && (rule.data as { origin: string }).origin}
+          {isDomain && (
+            <>
+              <div style="margin-bottom: 10px;">References:</div>
+              <div class="mono" style="font-size: 12px; color: var(--ink-3);">{rule.data.refs}</div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Source */}
+      <div>
+        <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">Source</div>
+        <div class="mono" style={`font-size: 12.5px; color: ${((isAst || isHook) && (rule.data as { verbatim: boolean }).verbatim) || isDomain ? 'var(--good)' : 'var(--ink-4)'};`}>
+          {isAst && ((rule.data as { verbatim: boolean }).verbatim ? 'verbatim from production rule pack' : 'summary — full body ships with /install')}
+          {isHook && ((rule.data as { verbatim: boolean }).verbatim ? 'verbatim from production rule pack' : 'summary — full body ships with /install')}
+          {isDomain && 'verbatim from .claude/docs/domain-rules/'}
+        </div>
+      </div>
+
+      {/* Cited by enforcement (domain only) */}
+      {isDomain && citedBy.length > 0 && (
+        <div>
+          <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">Cited by enforcement</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            {citedBy.map((id) => {
+              const target = lookup.get(id) ?? lookup.get(id.toLowerCase());
+              return target ? (
+                <a href={`/rules/${target.slug}`} class="mono" style="color: var(--accent); border-bottom: 1px dashed var(--accent); font-size: 12px; padding: 0 0 1px 0; display: inline-block;">{target.displayId}</a>
+              ) : (
+                <span class="mono" style="color: var(--ink-3); font-size: 12px;">{id}</span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Cites (enforcement only) */}
+      {(isAst || isHook) && cites.length > 0 && (
+        <div>
+          <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">Cites</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            {cites.map((id) => {
+              const target = lookup.get(id) ?? lookup.get(id.toLowerCase());
+              return target ? (
+                <a href={`/rules/${target.slug}`} class="mono" style="color: var(--accent); border-bottom: 1px dashed var(--accent); font-size: 12px; padding: 0 0 1px 0; display: inline-block;">{target.displayId}</a>
+              ) : (
+                <span class="mono" style="color: var(--ink-3); font-size: 12px;">{id}</span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Fires at (enforcement only) */}
+      {(isAst || isHook) && (
+        <div>
+          <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">Fires at</div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; padding: 8px 0;">
+            <div style="position: absolute; left: 4px; right: 4px; top: 50%; height: 1px; background: var(--rule-2);"></div>
+            {(['pre', 'post', 'gate', 'static'] as Stop[]).map((stopId, i) => {
+              const labels = ['Edit · PreToolUse', 'Edit · PostToolUse', 'Gate', 'Gate-static'];
+              const active = firesAtStops.includes(stopId);
+              return (
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative;">
+                  <div style={`width: 10px; height: 10px; border-radius: 50%; background: ${active ? firesAtPalette : 'var(--rule-2)'}; border: 2px solid var(--paper); box-shadow: ${active ? `0 0 0 1px ${firesAtPalette}` : 'none'}; z-index: 1;`}></div>
+                  <div class="mono" style={`font-size: 9.5px; color: ${active ? 'var(--ink-2)' : 'var(--ink-4)'}; text-align: center; line-height: 1.3;`}>{labels[i]}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </aside>
+  </section>
+</Page>

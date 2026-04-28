@@ -1,0 +1,61 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import IncidentMoment from '../../components/IncidentMoment.astro';
+import { article, organization, person, breadcrumbs } from '../../lib/jsonld.ts';
+
+export async function getStaticPaths() {
+  const incidents = await getCollection('incidents');
+  return incidents
+    .filter((i) => i.data.featured)
+    .map((i) => ({ params: { id: i.id }, props: { incident: i } }));
+}
+
+const { incident } = Astro.props as { incident: CollectionEntry<'incidents'> };
+const url = `https://code-rescue.com/incidents/${incident.id}`;
+
+const jsonLd = [
+  organization(),
+  person(),
+  article({
+    type: 'TechArticle',
+    url,
+    headline: `${incident.data.displayId} — ${incident.data.title}`,
+    description: `Incident ${incident.data.displayId}: ${incident.data.title}. Caught by ${incident.data.caughtBy}. Locked as ${incident.data.ruleDisplayId} on ${incident.data.ruleLockedOn ?? incident.data.date}.`,
+    datePublished: incident.data.date,
+    dateModified: incident.data.ruleLockedOn ?? incident.data.date,
+    keywords: ['incident', incident.data.severity, incident.data.ruleKind ?? ''].filter(Boolean) as string[],
+    articleSection: 'Incidents',
+  }),
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Incidents', url: 'https://code-rescue.com/incidents' },
+    { name: incident.data.displayId, url },
+  ]),
+];
+---
+
+<Page
+  title={`${incident.data.displayId} · ${incident.data.title} — Code Rescue`}
+  description={`${incident.data.title}. Caught by ${incident.data.caughtBy}. Locked as ${incident.data.ruleDisplayId}.`}
+  current="incidents"
+  page={`/incidents/${incident.id}`}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  {/* Breadcrumb */}
+  <div style="padding: 20px 48px 0; border-top: 1px solid var(--rule); background: var(--paper-2);">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px;">
+      <div class="mono" style="font-size: 11.5px; color: var(--ink-3); letter-spacing: 0.04em;">
+        <a href="/incidents" style="color: var(--ink-3); border-bottom: none;">/incidents</a>
+        <span style="color: var(--ink-4); margin: 0 8px;">›</span>
+        <span style="color: var(--accent);">{incident.data.displayId}</span>
+      </div>
+      <a href="/incidents" class="mono" style="border: 1px solid var(--rule-2); background: var(--paper); padding: 6px 14px; font-size: 11.5px; color: var(--ink-2); font-family: var(--mono); border-bottom: 1px solid var(--rule-2);">← back to all incidents</a>
+    </div>
+  </div>
+
+  <section style="padding: 0 48px 48px;">
+    <IncidentMoment incident={incident.data} />
+  </section>
+</Page>

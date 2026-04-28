@@ -1,0 +1,82 @@
+---
+import Page from '../layouts/Page.astro';
+import { organization, person, breadcrumbs } from '../lib/jsonld.ts';
+
+const url = 'https://code-rescue.com/about';
+
+const jsonLd = [
+  organization(),
+  person(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    url,
+    name: 'About — Code Rescue',
+    description: 'Maxwell A. Collins. Solo operator. AI-augmented engineering and due-diligence audits.',
+    mainEntity: { '@id': 'https://code-rescue.com/#max' },
+  },
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'About', url },
+  ]),
+];
+---
+
+<Page
+  title="About — Code Rescue"
+  description="Maxwell A. Collins. Solo operator. AI-augmented engineering and due-diligence audits across 30+ client codebases since 2023."
+  current="about"
+  page="/about"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 56px 48px 32px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      About · Maxwell A. Collins
+    </div>
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;">
+      <div>
+        <h1 style="font-size: 44px; line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 24ch;">
+          Solo operator. The methodology you read about on this site is the same one I use on the work.
+        </h1>
+      </div>
+      <table class="data" style="font-size: 13px;">
+        <tbody>
+          <tr><td style="color: var(--ink-4);">Operating since</td><td class="mono" style="text-align: right; color: var(--ink);">2023</td></tr>
+          <tr><td style="color: var(--ink-4);">Hours of AI-augmented engineering</td><td class="mono" style="text-align: right; color: var(--ink);">~10,000</td></tr>
+          <tr><td style="color: var(--ink-4);">Client codebases (under NDA)</td><td class="mono" style="text-align: right; color: var(--ink);">30+</td></tr>
+          <tr><td style="color: var(--ink-4);">Production systems shipped</td><td class="mono" style="text-align: right; color: var(--ink);">6</td></tr>
+          <tr><td style="color: var(--ink-4);">Methodology version</td><td class="mono" style="text-align: right; color: var(--ink);">v2 · 2026‑04‑11</td></tr>
+          <tr><td style="color: var(--ink-4);">Contact</td><td class="mono" style="text-align: right;"><a href="mailto:max@code-rescue.com" style="color: var(--accent); border-bottom: none;">max@code-rescue.com</a></td></tr>
+          <tr><td style="color: var(--ink-4);">GitHub</td><td class="mono" style="text-align: right;"><a href="https://github.com/macollins27" style="color: var(--accent); border-bottom: none;">macollins27</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {/* Bio */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">Bio</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px; line-height: 1.5;">
+          Four paragraphs.
+        </div>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>What I do.</strong> AI‑augmented engineering and due‑diligence audits, sold as two productized engagements: a five‑day source‑first audit (<a href="/audit">DRDD‑A</a>) and a six‑to‑eight‑week install of the methodology in a client's repo (<a href="/install">DRDD‑I</a>). Solo. Fixed scope, fixed price, fixed window. The <a href="/methodology">methodology</a>, the <a href="/rules">rule corpus</a>, and the <a href="/incidents">incident catalog</a> on this site are the same artifacts the work produces.
+        </p>
+        <p>
+          <strong>How I got here.</strong> Approximately ten thousand hours of AI‑augmented engineering since 2023, across thirty‑plus client codebases — every one under NDA, none nameable here. Hours tracked continuously through WakaTime; the ten‑thousand figure is conservative. The methodology fell out of doing this work and watching where it failed. Every rule in the corpus has an origin incident. Every commitment in the manifesto came out of an actual line of code that did not pass review. Nothing in the system was theorized first and validated later.
+        </p>
+        <p>
+          <strong>What I don't do.</strong> No team. No staffing. No advisory retainer. The engagements I take are bounded — if the work needs an embedded eng leader, an agency, or a ten‑person rollout, it needs a different kind of operator. The discipline of fixed scope is part of what makes the methodology defensible: the deliverable is exactly what was contracted for, and the audit history demonstrates it.
+        </p>
+        <p>
+          <strong>How to reach me.</strong> <a href="mailto:max@code-rescue.com">max@code-rescue.com</a>. Skim the methodology paper and the <a href="/docs/codex-audit-sample-report.pdf">sample audit (PDF)</a> first; that's enough to know whether DRDD is the right shape for what you need. Then email with the company name, the stack, and the deadline. I quote a band before we hang up.
+        </p>
+      </div>
+    </div>
+  </section>
+</Page>

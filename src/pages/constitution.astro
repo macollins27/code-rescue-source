@@ -1,0 +1,217 @@
+---
+import Page from '../layouts/Page.astro';
+import { article, organization, person, breadcrumbs } from '../lib/jsonld.ts';
+
+const url = 'https://code-rescue.com/constitution';
+
+const jsonLd = [
+  organization(),
+  person(),
+  article({
+    type: 'TechArticle',
+    url,
+    headline: 'PLW Constitution — 8 non-negotiable principles',
+    description:
+      'The eight non-negotiable principles every DRDD-installed repo carries at its root. Read in two minutes; cited from every locked rule and gate.',
+    datePublished: '2026-03-16',
+    dateModified: '2026-04-11',
+    keywords: ['constitution', 'methodology', 'agent-context', 'engineering discipline'],
+    articleSection: 'Methodology',
+  }),
+  breadcrumbs([
+    { name: 'Home', url: 'https://code-rescue.com/' },
+    { name: 'Methodology', url: 'https://code-rescue.com/methodology' },
+    { name: 'Constitution', url },
+  ]),
+];
+
+const principles = [
+  {
+    n: 'I',
+    title: 'Complete Legacy Parity',
+    tagline: 'Every feature in the legacy system ships in v3. No deferrals.',
+    body: `Every feature in the legacy codebase MUST ship in the rebuild. No feature is deferred, cut, or simplified. The feature inventory is the only source for what legacy features exist; the spec is cross-checked against feature inventory IDs to verify nothing is missing. The legacy is the floor — the rebuild must do everything legacy does, plus more.`,
+    rationale: `This is a complete rebuild for acquisition. Due diligence will compare the rebuild to legacy. Missing features = deal risk.`,
+  },
+  {
+    n: 'II',
+    title: 'UUIDv7 Everywhere',
+    tagline: 'Time-ordered IDs. Never UUIDv4. Never auto-increment.',
+    body: `All primary keys MUST use UUIDv7 (time-ordered), never UUIDv4 or auto-increment. Use the project's <code class="mono" style="font-size: 13px;">generateId()</code> for all non-auth table IDs. Never <code class="mono" style="font-size: 13px;">crypto.randomUUID()</code> or <code class="mono" style="font-size: 13px;">uuid.v4()</code>. Better Auth manages its own IDs for auth tables.`,
+    rationale: `Time-ordered UUIDs provide sequential inserts for B-tree performance while maintaining distributed generation. Auditors ask "are your IDs predictable enough to be IDOR vectors?" — UUIDv7 has no predictable component, sequential PKs leak row counts.`,
+  },
+  {
+    n: 'III',
+    title: 'Temporal Consistency',
+    tagline: 'TIMESTAMPTZ everywhere, in UTC. No bare TIMESTAMP.',
+    body: `All timestamps MUST be <code class="mono" style="font-size: 13px;">TIMESTAMPTZ</code> stored in UTC. Database columns: <code class="mono" style="font-size: 13px;">timestamp("col", { withTimezone: true })</code>. Application converts to user timezone only for display. Never bare <code class="mono" style="font-size: 13px;">TIMESTAMP</code> without timezone.`,
+    rationale: `Properties across timezones need reliably sortable and comparable timestamps. Auditors check timezone correctness on financial timestamps; bare TIMESTAMP across timezones is an audit finding.`,
+  },
+  {
+    n: 'IV',
+    title: 'Architecture Boundaries',
+    tagline: 'Strict package boundaries. Dependency-cruiser enforces.',
+    body: `All code follows strict package boundaries enforced by dependency-cruiser. UI components MUST NOT import database packages. Database is a leaf — MUST NOT import auth or API. All DB access goes through tRPC procedures — no Drizzle in components. Server components fetch; client components render. No circular dependencies. No raw SQL — Drizzle ORM only.`,
+    rationale: `Clean boundaries enable due-diligence review, prevent coupling, and allow packages to evolve independently — including a future React Native app consuming the same packages through a different adapter.`,
+  },
+  {
+    n: 'V',
+    title: 'Source-First Development from Domain Rules',
+    tagline: 'Domain rules are truth. Source code has zero authority.',
+    body: `All source code is produced directly from domain rules via the <code class="mono" style="font-size: 13px;">/contract</code> + <code class="mono" style="font-size: 13px;">/build-source</code> layer-based pipeline. Domain rules are the authoritative specification. If domain rules say X and source code does Y, the source code is wrong. There is no reconciliation. Source code has zero authority. Tests are regression safety nets, not the primary pipeline. Three finish-line criteria (locked): every user journey works in a real browser, the gate passes, the QA auditor has zero blockers. Nothing else counts. Not test coverage. Not mutation score.`,
+    rationale: `Greenwood Hall shipped a comparable system with a simpler quality system — source-first from specs, QA auditor, regression tests post-ship — and delivered zero bugs. PLW's earlier elaborate TDD apparatus produced 4,800 fake tests and 200+ bugs the suite certified clean. Domain rules remain the authoritative specification — the pipeline order changed (source-first instead of test-first), not the quality standard. Catching bugs at the point of creation via <code class="mono" style="font-size: 13px;">gate:static</code> after every layer and structured review before QA is mathematically cheaper than deferred detection.`,
+  },
+  {
+    n: 'VI',
+    title: 'File Size Discipline',
+    tagline: 'Maximum 500 lines per file. 200 lines per function. No `any`.',
+    body: `Source code files MUST stay small and focused (does NOT apply to test files). Maximum 500 lines per file. Maximum 200 lines per function. No <code class="mono" style="font-size: 13px;">any</code> type — write real types. No <code class="mono" style="font-size: 13px;">console.log</code> — use proper logging. No <code class="mono" style="font-size: 13px;">eval()</code> or <code class="mono" style="font-size: 13px;">document.write</code> — XSS prevention. No empty catch blocks — handle errors properly.`,
+    rationale: `Small files are reviewable, testable, and maintainable. Due diligence penalizes large, unfocused files.`,
+  },
+  {
+    n: 'VII',
+    title: 'Immutable Data Patterns',
+    tagline: 'Always create new objects. Never mutate.',
+    body: `ALWAYS create new objects, NEVER mutate existing ones. Use spread operators for updates: <code class="mono" style="font-size: 13px;">{ ...original, field: newValue }</code>. Database updates create audit trail entries (asset_history, etc.). Soft deletes where business logic requires history preservation. No hidden side effects from mutation.`,
+    rationale: `Immutable data prevents bugs, enables safe concurrency, and maintains audit trails for compliance.`,
+  },
+  {
+    n: 'VIII',
+    title: 'Mobile-Ready Foundation',
+    tagline: 'Native iOS/Android is legacy parity, not a future enhancement.',
+    body: `The legacy has native iOS and Android apps. Native mobile is legacy parity — a legal requirement, not a post-launch enhancement. Framework-agnostic packages (<code class="mono" style="font-size: 13px;">@repo/api</code>, <code class="mono" style="font-size: 13px;">@repo/auth</code>, <code class="mono" style="font-size: 13px;">@repo/database</code>) MUST have ZERO <code class="mono" style="font-size: 13px;">next/*</code> imports. Dual auth transport: cookies (web) AND bearer tokens (mobile). Soft deletes everywhere — mobile sync cannot handle hard deletes. Sync-ready schemas: every table has <code class="mono" style="font-size: 13px;">updatedAt TIMESTAMPTZ</code> with index. Channel-agnostic notifications. UUIDv7 enables offline ID generation without server coordination.`,
+    rationale: `The legacy has native apps. Losing native mobile is a legal liability during due diligence. Building web-only and retrofitting mobile later requires expensive architectural rewrites. Baking mobile-readiness into the foundation costs almost nothing now and saves months later.`,
+  },
+];
+---
+
+<Page
+  title="Constitution — Code Rescue"
+  description="The eight non-negotiable principles every DRDD-installed repo carries at its root. Cited from every locked rule and every gate."
+  current=""
+  page="/constitution"
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  {/* Hero */}
+  <section style="padding: 44px 48px 32px; border-bottom: 1px solid var(--rule);">
+    <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 14px;">
+      Constitution · v3.0.0 · ratified 2026‑03‑16 · last updated 2026‑04‑11
+    </div>
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;">
+      <div>
+        <h1 style="font-size: 44px; line-height: 1.1; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 22ch;">
+          Eight non‑negotiable principles.
+        </h1>
+        <p class="serif" style="font-size: 18px; color: var(--ink-2); max-width: 44ch; margin-top: 22px; line-height: 1.5; margin-bottom: 0;">
+          The constitution at the root of every DRDD‑installed repo. Read in under two minutes. Cited from every locked rule and every gate by identifier. Violations are blocking errors, not warnings.
+        </p>
+      </div>
+      <table class="data" style="font-size: 13px;">
+        <tbody>
+          <tr><td style="color: var(--ink-4);">Version</td><td class="mono" style="text-align: right; color: var(--ink);">3.0.0</td></tr>
+          <tr><td style="color: var(--ink-4);">Ratified</td><td class="mono" style="text-align: right; color: var(--ink);">2026‑03‑16</td></tr>
+          <tr><td style="color: var(--ink-4);">Last updated</td><td class="mono" style="text-align: right; color: var(--ink);">2026‑04‑11</td></tr>
+          <tr><td style="color: var(--ink-4);">Principles</td><td class="mono" style="text-align: right; color: var(--ink);">8</td></tr>
+          <tr><td style="color: var(--ink-4);">Read time</td><td class="mono" style="text-align: right; color: var(--ink);">~2 min</td></tr>
+          <tr><td style="color: var(--ink-4);">Cited by</td><td class="mono" style="text-align: right; color: var(--ink);">every locked rule</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {/* §1 Why short */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§1 Why short</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Working‑memory budget.</div>
+      </div>
+      <div class="prose">
+        <p>
+          The constitution is short by design. Long constitutions fail in agent context. Compliance with prose specifications decays with context length, in a curve that rises sharply once the document passes a few thousand tokens. By the middle of a session, an agent is referring to the constitution from a fragmented internal model. The longer the constitution, the steeper the curve.
+        </p>
+        <p>
+          A constitution principle has to be load‑bearing. Every rule in the corpus cites at least one constitution principle by identifier. Every gate failure traces to a constitution‑level breach. If a candidate principle does not have at least one descendant rule that depends on it, it is not yet a constitution principle — it is an opinion, and opinions live elsewhere. The expansion of <em>why short</em> is at <a href="/writing/2026-03-16-eight-principles-why-the-constitution-is-short">/writing/eight-principles</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* §2 The eight */}
+  <section class="section tight" style="background: var(--paper-2);">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§2 The eight</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Each is non‑negotiable.</div>
+      </div>
+      <div>
+        {principles.map((p) => (
+          <article style="border-top: 1px solid var(--rule-2); padding-top: 28px; padding-bottom: 28px;">
+            <div style="display: grid; grid-template-columns: 120px 1fr; gap: 32px; align-items: start;">
+              <div>
+                <div class="mono" style="font-size: 11px; color: var(--accent); letter-spacing: 0.12em;">{p.n}</div>
+              </div>
+              <div>
+                <h3 style="font-size: 22px; font-weight: 600; letter-spacing: -0.015em; margin: 0 0 6px; color: var(--ink);">
+                  {p.title}
+                </h3>
+                <div class="serif" style="font-size: 16px; font-style: italic; color: var(--ink-3); margin-bottom: 18px;">
+                  {p.tagline}
+                </div>
+                <div class="serif" style="font-size: 16px; line-height: 1.65; color: var(--ink-2); margin-bottom: 18px;" set:html={p.body}></div>
+                <div style="border-left: 2px solid var(--accent); padding-left: 14px;">
+                  <div class="mono" style="font-size: 10.5px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;">Rationale</div>
+                  <div class="serif" style="font-size: 14.5px; font-style: italic; color: var(--ink-2); line-height: 1.55;" set:html={p.rationale}></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* §3 Governance */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§3 Governance</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">How it changes.</div>
+      </div>
+      <div class="prose">
+        <p>
+          This constitution supersedes all other practices in the codebase that carries it. Violations are blocking errors, not warnings. Every spec, plan, and task must pass constitution compliance before implementation.
+        </p>
+        <p>
+          Updates land at the version line at the top. Principle V (Source-First Development from Domain Rules) was rewritten on 2026‑04‑11 from an earlier two-agent adversarial framing — the rewrite was prompted by the 4,800-fake-tests incident at <a href="/incidents/inc-002-fake-tests">INC‑002</a> and locked in the same session that retired mutation testing from the tech stack. The principle changes; the discipline does not.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* §4 Next */}
+  <section class="section tight" style="background: var(--paper-2); border-bottom: none;">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§4 Next</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+        <div style="border-top: 2px solid var(--ink); padding-top: 14px;">
+          <div style="font-size: 17px; font-weight: 600; margin-bottom: 6px;">The methodology paper</div>
+          <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 14px;">
+            The frame around these principles. Twelve rules of a domain rule, four commitments, two anatomy specimens. The principle is the constitution; the substance is in the rule corpus.
+          </div>
+          <a href="/methodology">/methodology →</a>
+        </div>
+        <div style="border-top: 2px solid var(--rule-2); padding-top: 14px;">
+          <div style="font-size: 17px; font-weight: 600; margin-bottom: 6px;">Why short — the writeup</div>
+          <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 14px;">
+            Long-form on the working-memory budget that determined the count. Why eight, not twelve. Why the constitution is not the methodology paper.
+          </div>
+          <a href="/writing/2026-03-16-eight-principles-why-the-constitution-is-short">/writing/eight-principles →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Page>

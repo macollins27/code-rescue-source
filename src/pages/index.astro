@@ -1,0 +1,320 @@
+---
+import { getCollection } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import FN from '../components/FN.astro';
+import { organization, person, website } from '../lib/jsonld.ts';
+
+const writing = (await getCollection('writing'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : -1))
+  .slice(0, 5);
+
+const jsonLd = [
+  organization(),
+  person(),
+  website(),
+];
+---
+
+<Page
+  title="Code Rescue — AI-augmented engineering and DD audits"
+  description="AI-augmented engineering and due-diligence audits for codebases that have to survive review. Methodology, rule corpus, and incident catalog published openly. Every claim sourced."
+  current="home"
+  page="/"
+  jsonLd={jsonLd}
+>
+  {/* Above-the-fold: one claim, one receipt */}
+  <section style="padding: 56px 48px 0; border-bottom: 1px solid var(--rule);">
+    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: end;">
+      <div>
+        <div class="mono" style="font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 24px;">
+          Code Rescue · v0.4.1 · locked 2026‑04‑11
+        </div>
+        <h1 style="font-size: 56px; line-height: 1.04; letter-spacing: -0.025em; font-weight: 600; margin: 0; max-width: 20ch;">
+          Every claim on this site has a source.
+        </h1>
+        <p class="serif" style="font-size: 19px; color: var(--ink-2); max-width: 40ch; margin-top: 22px; line-height: 1.5; margin-bottom: 0;">
+          Code Rescue does AI‑augmented engineering and due‑diligence audits for codebases that have to survive review. The methodology, the rule corpus, and the incident catalog on this site are the artifacts one of the engagements produces. The example below is a live entry — picked at random.
+        </p>
+      </div>
+      <table class="data" style="font-size: 13px;">
+        <tbody>
+          <tr><td style="color: var(--ink-4);">Hours of AI‑augmented engineering across 30+ repos</td><td class="mono" style="text-align: right; color: var(--ink);">10,000+<FN n={1} /></td></tr>
+          <tr><td style="color: var(--ink-4);">Production systems shipped</td><td class="mono" style="text-align: right;"><a href="#engagements" style="color: var(--accent); border-bottom: 1px dashed var(--accent);">6</a><FN n={2} /></td></tr>
+          <tr><td style="color: var(--ink-4);">Hours on this methodology</td><td class="mono" style="text-align: right; color: var(--ink);">~2,000<FN n={3} /></td></tr>
+          <tr><td style="color: var(--ink-4);">Major incidents catalogued</td><td class="mono" style="text-align: right;"><a href="/incidents" style="color: var(--accent); border-bottom: 1px dashed var(--accent);">9</a><FN n={4} /></td></tr>
+          <tr><td style="color: var(--ink-4);">Enforcement rules in corpus</td><td class="mono" style="text-align: right;"><a href="/rules" style="color: var(--accent); border-bottom: 1px dashed var(--accent);">89</a><FN n={5} /></td></tr>
+          <tr><td style="color: var(--ink-4);">QA flows in harness</td><td class="mono" style="text-align: right; color: var(--ink);">66<FN n={6} /></td></tr>
+          <tr><td style="color: var(--ink-4);">Post‑deploy incidents on the six shipped products</td><td class="mono" style="text-align: right;"><a href="/incidents" style="color: var(--good); border-bottom: 1px dashed var(--good);">0</a><FN n={7} /></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    {/* The receipt — a real rule card pulled inline */}
+    <div style="margin-top: 44px; padding-top: 32px; padding-bottom: 36px; border-top: 1px solid var(--rule-2);">
+      <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+        <div>
+          <div class="label">Receipt</div>
+          <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px; line-height: 1.5;">
+            A rule from the public corpus, with its origin incident.
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--paper-2);">
+          {/* LEFT — the rule */}
+          <div style="padding: 22px 26px; border-right: 1px solid var(--rule);">
+            <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">
+              ast‑grep · TypeScript · locked 2026‑04‑04
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px;">
+              <a href="/rules/require-caller-in-tests" style="font-size: 17px; font-weight: 600; font-family: var(--mono); color: var(--accent); border-bottom: 1px dashed var(--accent);">require‑caller‑in‑tests</a>
+              <span class="pill" style="color: var(--bad); border-color: var(--bad);">error</span>
+            </div>
+            <div class="serif" style="font-size: 14.5px; color: var(--ink-2); line-height: 1.55; margin-bottom: 14px;">
+              Every <code class="mono" style="font-size: 13px;">it()</code> block in router/integration tests must call the actual tRPC procedure via <code class="mono" style="font-size: 13px;">caller.&lt;domain&gt;.&lt;procedure&gt;()</code> or <code class="mono" style="font-size: 13px;">createCaller()</code>. The litmus test: delete the router — does the test still pass?
+            </div>
+            <pre class="code" style="font-size: 11.5px; padding: 12px 14px; margin: 0; line-height: 1.5;">{`id: require-caller-in-tests
+language: typescript
+severity: error
+message: |
+  FAKE TEST: This test block does not call production code.
+  A test that only asserts on mocks is worthless. It will
+  pass even if the production code is deleted.
+files:
+  - "**/routers/**/*.test.ts"
+  - "**/integration/**/*.test.ts"
+rule:
+  pattern: it($NAME, $$$BODY)
+  not:
+    has:
+      stopBy: end
+      any:
+        - pattern: createCaller($$$ARGS)
+        - pattern: caller.$DOMAIN.$PROC($$$ARGS)`}</pre>
+          </div>
+          {/* RIGHT — origin */}
+          <div style="padding: 22px 26px; display: flex; flex-direction: column; gap: 18px;">
+            <div>
+              <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">Origin incident</div>
+              <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;">
+                <a href="/incidents/inc-002-fake-tests" style="font-size: 14px; font-weight: 600; font-family: var(--mono); color: var(--accent); border-bottom: 1px dashed var(--accent);">INC‑002</a>
+                <span class="mono" style="font-size: 11px; color: var(--ink-4);">2026‑04‑04</span>
+              </div>
+              <div class="serif" style="font-size: 13.5px; color: var(--ink-2); line-height: 1.55;">
+                4,800 fake tests, all passing. The QA harness then surfaced 200+ real bugs the suite had certified clean. Tests asserted on mock return values — circular testing that proves nothing about production code. Whole suite deleted; the rule above was authored the same week to prevent recurrence at write‑time.
+              </div>
+            </div>
+            <div>
+              <div class="mono" style="font-size: 10.5px; color: var(--ink-4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;">Cites</div>
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <a href="/rules/require-router-import-in-tests" class="mono" style="font-size: 12px; color: var(--accent); border-bottom: 1px dashed var(--accent);">require‑router‑import</a>
+                <a href="/rules/block-empty-cast-in-tests" class="mono" style="font-size: 12px; color: var(--accent); border-bottom: 1px dashed var(--accent);">block‑empty‑cast</a>
+                <a href="/rules/block-vague-test-names" class="mono" style="font-size: 12px; color: var(--accent); border-bottom: 1px dashed var(--accent);">block‑vague‑names</a>
+              </div>
+            </div>
+            <div style="margin-top: auto; padding-top: 14px; border-top: 1px solid var(--rule-2);">
+              <a href="/rules" class="mono" style="font-size: 11.5px; color: var(--ink-3); border-bottom: 1px solid var(--rule);">browse the full corpus → /rules</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* §1 Offerings */}
+  <section class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§1 Offerings</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">3 / 3 fixed‑scope</div>
+      </div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width: 16%;">Code</th>
+            <th style="width: 22%;">Offering</th>
+            <th style="width: 11%;">Price</th>
+            <th style="width: 10%;">Days</th>
+            <th>What you get</th>
+            <th style="width: 10%; text-align: right;">Detail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono" style="color: var(--accent);">DRDD‑A</td>
+            <td>DRDD Audit</td>
+            <td class="mono">$25–40K</td>
+            <td class="mono">5</td>
+            <td>Source‑first read‑only audit against the DRDD rubric. Findings classified Type 1 / 2 / 3. Partner‑ready summary, full report, remediation plan, redacted sample available before signing.</td>
+            <td style="text-align: right;"><a href="/audit">/audit →</a></td>
+          </tr>
+          <tr>
+            <td class="mono" style="color: var(--accent);">DRDD‑I</td>
+            <td>DRDD Install</td>
+            <td class="mono">$80–150K</td>
+            <td class="mono">42–56</td>
+            <td>Constitution, gates, hooks, ast‑grep + hookify rule packs, QA harness, dispatch protocol, agent‑review hooks. Tuned to your stack. Locked rules with origin incidents.</td>
+            <td style="text-align: right;"><a href="/install">/install →</a></td>
+          </tr>
+          <tr>
+            <td class="mono" style="color: var(--accent);">ENG</td>
+            <td>Engagement</td>
+            <td class="mono">Custom</td>
+            <td class="mono">—</td>
+            <td>Bounded technical work. Use this when you want the operator who wrote the methodology, not someone trained on it.</td>
+            <td style="text-align: right;"><a href="mailto:max@code-rescue.com?subject=Engagement%20inquiry">contact →</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {/* §2 Buyer fit */}
+  <section class="section tight" style="background: var(--paper-2);">
+    <div style="display: grid; grid-template-columns: 180px 1fr 1fr 1fr; gap: 32px;">
+      <div>
+        <div class="label">§2 Fit</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Read yourself in.</div>
+      </div>
+      {[
+        { who: 'PE / VC tech‑DD', what: "You're doing diligence on an AI‑augmented portfolio company. The methodology paper plus a redacted sample audit usually tell you whether the engagement is worth a call.", buy: 'DRDD‑A' },
+        { who: 'CTOs at AI‑native SaaS', what: "You're preparing for a funding round, acquisition, or external audit. Install if the team will keep building. Audit if the codebase is a fixed artifact.", buy: 'DRDD‑I' },
+        { who: 'Eng leaders rolling out AI', what: "You're rolling out AI‑augmented coding internally, and the rules you lock are going to outlive the rollout itself. Install, scoped to your rollout.", buy: 'DRDD‑I' },
+      ].map((b) => (
+        <div>
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">{b.who}</div>
+          <div class="serif" style="font-size: 14px; color: var(--ink-3); line-height: 1.55;">{b.what}</div>
+          <div style="margin-top: 10px; font-size: 11px; font-family: var(--mono); color: var(--ink-4);">
+            Likely fit: <span style="color: var(--accent);">{b.buy}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* §3 Engagements */}
+  <section id="engagements" class="section tight">
+    <div style="display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start;">
+      <div>
+        <div class="label">§3 Engagements</div>
+        <div style="font-size: 12px; color: var(--ink-4); font-family: var(--mono); margin-top: 8px;">Redacted, specific.</div>
+      </div>
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width: 13%;">Period</th>
+            <th style="width: 8%;">Type</th>
+            <th style="width: 26%;">Subject</th>
+            <th>Notes</th>
+            <th style="width: 8%; text-align: right;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">2026‑01 → present</td>
+            <td><span class="pill">build</span></td>
+            <td>Six‑product TS monorepo, NDA<FN n={1} /></td>
+            <td>Solo build under 90/100 audit target. Hub, PO, LIP, LSP, LMP, Admin. ~2,000 hrs. Source‑first pipeline. 9‑pass adversarial review per domain. External audit on roadmap.</td>
+            <td class="mono" style="text-align: right; color: var(--good);">active</td>
+          </tr>
+          <tr>
+            <td class="mono">2026‑04‑11</td>
+            <td><span class="pill">paper</span></td>
+            <td><a href="/methodology">DRDD methodology v0.4</a></td>
+            <td>17‑min read. Eight non‑negotiable principles. Locked, version‑pinned. Cited from every CTO decision and skill in the system.</td>
+            <td class="mono" style="text-align: right;">locked</td>
+          </tr>
+          <tr>
+            <td class="mono">2026‑02 → 2026‑04</td>
+            <td><span class="pill">corpus</span></td>
+            <td><a href="/rules">Public rule corpus, 89 rules</a></td>
+            <td>41 ast‑grep + 48 hookify. Each entry: origin incident, locked‑on date, enforcement layer (file / bash / agent / gate).</td>
+            <td class="mono" style="text-align: right;">open</td>
+          </tr>
+          <tr>
+            <td class="mono">ongoing</td>
+            <td><span class="pill">catalog</span></td>
+            <td><a href="/incidents">Nine major incidents</a></td>
+            <td>Each entry has a date, a session id, what failed, the rule that locked, and the hook or grep pattern that now blocks recurrence.</td>
+            <td class="mono" style="text-align: right;">open</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {/* §4 + §5 Now + Writing */}
+  <section class="section tight" style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; background: var(--paper-2);">
+    <div>
+      <div class="label">§4 Now</div>
+      <h2 style="font-size: 18px; font-weight: 600; margin: 8px 0 14px;">What I'm working on this week.</h2>
+      <div class="serif" style="font-size: 15px; line-height: 1.6; color: var(--ink-2);">
+        <p style="margin: 0 0 0.9em;">
+          <strong style="color: var(--ink);">Building.</strong> Canonical‑identity migration v2 inside the monorepo. Wave 1, layer 0a audit complete; layer 0 retro validation in flight.
+        </p>
+        <p style="margin: 0 0 0.9em;">
+          <strong style="color: var(--ink);">Stuck on.</strong> Making <code class="mono" style="font-size: 13px;">/frontend‑implement</code> reliable enough that one agent can take a wireframe and a tRPC contract and produce production‑grade React without a seven‑round human review loop. I have no answer yet.
+        </p>
+        <p style="margin: 0 0 0.9em;">
+          <strong style="color: var(--ink);">Last week.</strong> Re‑locked the skill‑iteration protocol after a near‑regression. <a href="/writing">Writeup.</a>
+        </p>
+      </div>
+      <div class="mono" style="font-size: 11px; color: var(--ink-4); margin-top: 14px;">
+        Last edited 2026‑04‑27 · <a href="/now" style="color: var(--ink-4); border-bottom: 1px solid var(--rule);">full /now page →</a>
+      </div>
+    </div>
+    <div>
+      <div class="label">§5 Writing</div>
+      <h2 style="font-size: 18px; font-weight: 600; margin: 8px 0 14px;">Recent.</h2>
+      {writing.length > 0 ? (
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          {writing.map((p) => (
+            <li style="border-bottom: 1px solid var(--rule); padding: 10px 0; display: grid; grid-template-columns: 100px 1fr; gap: 16px; align-items: baseline;">
+              <span class="mono" style="font-size: 12px; color: var(--ink-4);">{p.data.date}</span>
+              <a href={`/writing/${p.id}`} style="color: var(--ink); border-bottom: none; font-size: 15px;">{p.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="serif" style="font-size: 15px; color: var(--ink-3);">No posts published yet. Drafts in flight.</p>
+      )}
+      <div class="mono" style="font-size: 11px; color: var(--ink-4); margin-top: 14px;">
+        <a href="/writing" style="color: var(--ink-4); border-bottom: 1px solid var(--rule);">archive →</a> · <a href="/rss.xml" style="color: var(--ink-4); border-bottom: 1px solid var(--rule);">RSS</a>
+      </div>
+    </div>
+  </section>
+
+  {/* Footnotes */}
+  <section class="section tight" style="background: var(--paper-2);">
+    <div class="label">Footnotes</div>
+    <ol style="margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--ink-3); line-height: 1.55; column-count: 2; column-gap: 48px;">
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[1]</span>
+        <span>Logged via WakaTime (VS Code plugin) since 2023. ~12–14 hrs/day, 7 days/week, across 30+ client repositories.</span>
+      </li>
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[2]</span>
+        <span>Hub, PO, LIP, LSP, LMP, Admin. TypeScript monorepo. Built solo with Claude Code under a documented dispatch protocol. Client name redacted under NDA.</span>
+      </li>
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[3]</span>
+        <span>Approximation. Counted from session logs and dispatch records 2026‑01‑02 → 2026‑04‑27.</span>
+      </li>
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[4]</span>
+        <span>Catalogued at <a href="/incidents">/incidents</a>. Each entry includes session id, date, root cause, and the locked rule that now blocks recurrence.</span>
+      </li>
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[5]</span>
+        <span>41 ast‑grep YAML rules + 48 hookify markdown rules. Browseable at <a href="/rules">/rules</a>.</span>
+      </li>
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[6]</span>
+        <span>66 flow YAML files in <code class="mono">scripts/qa-flows/</code>, each driving a real Chromium browser via Playwright MCP.</span>
+      </li>
+      <li style="break-inside: avoid; margin-bottom: 10px; display: flex; gap: 8px;">
+        <span class="mono" style="color: var(--accent); flex: 0 0 24px;">[7]</span>
+        <span>Zero production incidents on the six shipped products in the engagement above. Pre‑production incidents are catalogued openly at <a href="/incidents">/incidents</a>; that's the point.</span>
+      </li>
+    </ol>
+  </section>
+</Page>

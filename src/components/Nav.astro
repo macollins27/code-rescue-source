@@ -1,0 +1,36 @@
+---
+interface Props {
+  current?: string;
+}
+
+const { current = 'home' } = Astro.props;
+
+const items = [
+  { id: 'home', label: 'Home', href: '/' },
+  { id: 'methodology', label: 'Methodology', href: '/methodology' },
+  { id: 'rules', label: 'Rules', href: '/rules' },
+  { id: 'incidents', label: 'Incidents', href: '/incidents' },
+  { id: 'audit', label: 'Audit', href: '/audit' },
+  { id: 'install', label: 'Install', href: '/install' },
+  { id: 'writing', label: 'Writing', href: '/writing' },
+  { id: 'now', label: 'Now', href: '/now' },
+  { id: 'about', label: 'About', href: '/about' },
+];
+---
+
+<nav class="nav">
+  <div class="brand">
+    <span class="mark">▍</span>Code Rescue
+  </div>
+  <ul>
+    {items.map((it) => (
+      <li>
+        <a
+          href={it.href}
+          style={current === it.id ? 'color: var(--accent); font-weight: 500;' : ''}
+        >{it.label}</a>
+      </li>
+    ))}
+  </ul>
+  <div class="meta">max@code-rescue.com</div>
+</nav>

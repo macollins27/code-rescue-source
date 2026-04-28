@@ -1,0 +1,18 @@
+---
+title: "Twenty commits, one git stash, no warning."
+description: "An orchestrator agent ran git stash to clean up. Twenty commits of work were silently dropped. Four hours of recovery, two of them spent re-deriving work I'd already finished. The cost of an incident is what the next incident in the same family would cost if you didn't lock the rule."
+date: "2026-03-22"
+tags: ["incident", "git", "agent-safety", "tooling"]
+---
+
+An orchestrator agent ran `git stash` across a worktree to clean up before a checkpoint. It was the ordinary kind of housekeeping — clear the deck, take a snapshot, resume in a known state. The stash succeeded. The next push showed twenty commits' worth of changes missing.
+
+Four hours of recovery. The mechanic of the failure is in the man page — `git stash` without `--include-untracked` skips untracked files, and the agent's worktree had a mix of tracked-and-modified plus newly-created. The skipped files were not lost in any forensic sense; they were sitting in a stash entry the agent never returned to. But they were also not in any state the agent could see, and the agent's next operation was an unrelated rebase. By the time anyone looked, the working state had moved past the recovery point.
+
+**The deeper cost.** Two of those four hours were not spent recovering files. They were spent re‑deriving a piece of work I had already finished and forgotten about — a transformation that was harder to reconstruct than to write the first time, because the second time I no longer had the dead ends in working memory. The first hour of any post‑incident recovery is the hour you spend remembering what was even there.
+
+**The lock.** Three layers, all authored the same week. [block-dangerous-git](/rules/block-dangerous-git), a hookify rule that fires on `PreToolUse:Bash` and refuses to dispatch any of sixteen destructive git patterns. `git-guard.sh`, the bash hook implementation behind the hookify rule, registered in `.claude/settings.json` so no agent can claim it isn't loaded. The `permissions.deny` list in the same settings file, declarative tool-gating that makes specific patterns flat-out unavailable to the model.
+
+The hookify rule fires earliest. It runs at the keystroke — the moment an agent types a `Bash` tool call, before the call dispatches. That's the right layer for this defense. ast-grep runs in CI, which is the right layer for things you commit; but the failure mode here was a one-shot bash command an agent ran in-session, not code in a repo. The bash-tool block intercepts before the destruction happens. The corpus of forbidden bash patterns now spans roughly sixteen entries in the same family: irrecoverable destructive operations on history, untracked deletions, force pushes to protected branches, anything that produces a state the next agent cannot reason its way back from.
+
+**The principle.** Every failure becomes infrastructure. The cost of an incident is not what it cost; it is what the next incident in the same family would cost if you didn't lock the rule. The four hours from this one bought permanent immunity from a class of agent footgun. That trade is the whole methodology compressed to one transaction.

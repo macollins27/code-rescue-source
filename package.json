@@ -1,0 +1,27 @@
+{
+  "name": "code-rescue-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Code Rescue — public site. AI-augmented engineering and DD audits.",
+  "homepage": "https://code-rescue.com",
+  "author": "Maxwell A. Collins <max@code-rescue.com>",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.2.1",
+    "astro": "^5.1.0",
+    "typescript": "^5.7.2"
+  }
+}
