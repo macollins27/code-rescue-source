@@ -1,0 +1,51 @@
+# Code Rescue
+
+> AI-augmented engineering and due-diligence audits for codebases that have to survive review. Operated by Maxwell A. Collins, solo. The methodology, the rule corpus, and the incident catalog on this site are the same artifacts the work produces.
+
+Two productized engagements:
+
+- **DRDD-A (Audit)** — five-day source-first technical due-diligence audit. $25–40K. Read-only repo access. 30-43 page PDF deliverable, partner-ready.
+- **DRDD-I (Install)** — six-to-eight-week install of the methodology in a client's repo. $80–150K. Constitution, gates, hooks, ast-grep + hookify rule packs, QA harness, dispatch protocol, agent-review hooks.
+
+Every claim on the site has a source. Every rule on the site has an origin incident. Every incident has a date, a session id, and a locked rule that now blocks recurrence.
+
+## Methodology
+
+- [DRDD Manifesto v2](https://code-rescue.com/methodology): The methodology paper. Four commitments, twelve rules of a domain rule, two anatomy specimens (AUTH-5, PER-7). Locked 2026-04-11. ~17 minutes to read.
+- [Constitution](https://code-rescue.com/constitution): Eight non-negotiable principles. PLW v3.0.0, ratified 2026-03-16, last updated 2026-04-11. Read in two minutes; cited from every locked rule and gate by identifier.
+
+## Rule corpus
+
+- [Public rule corpus](https://code-rescue.com/rules): 17 ast-grep rules + 11 hookify rules + 15 domain rules, verbatim from a working installation. Three layers: ast-grep at edit and gate time, hookify at the keystroke, domain rules as the spec the enforcement protects.
+
+## Incident catalog
+
+- [Incidents](https://code-rescue.com/incidents): Nine catalogued incidents, each producing a permanent rule. Each entry has a date, a session id, what failed, the rule that locked, and the hook or grep pattern that now blocks recurrence.
+
+The 9 incidents:
+- [INC-001](https://code-rescue.com/incidents/inc-001-git-stash-disaster) · 2026-03-20 · git stash + worktree wiped 20 commits and 20 hours of work
+- [INC-002](https://code-rescue.com/incidents/inc-002-fake-tests) · 2026-04-04 · 4,800 fake tests; 200+ bugs found by QA they should have caught
+- [INC-003](https://code-rescue.com/incidents/inc-003-properties-organization-id) · 2026-04-07 · Audit agent proposed CTO decision instead of classifying schema as buggy
+- [INC-004](https://code-rescue.com/incidents/inc-004-three-subagents-ignored) · 2026-04-12 · Orchestrator lied "all 3 fixed" without reading three subagent reports
+- [INC-005](https://code-rescue.com/incidents/inc-005-contract-feature-spiral) · 2026-04-19→25 · /contract-feature 6-day spiral, 25 iterations, contract destroyed
+- [INC-006](https://code-rescue.com/incidents/inc-006-frontmatter-to-skill) · 2026-04-20 · CTO/QA personas hit ~80% compliance ceiling via agent frontmatter
+- [INC-007](https://code-rescue.com/incidents/inc-007-stash-to-blame) · 2026-04-20 · Agent ran git stash to hide own errors and blame prior state
+- [INC-008](https://code-rescue.com/incidents/inc-008-qa-stdio-mcp-rebuild) · 2026-04-21 · QA emission silently dropped, CSP blocked HTTP
+- [INC-009](https://code-rescue.com/incidents/inc-009-skill-iteration-relock) · 2026-04-27 · Earlier skill-iteration framing inverted Feynman; re-locked
+
+## Services
+
+- [DRDD Audit](https://code-rescue.com/audit): Five-day technical due-diligence audit. Sample 43-page PDF at /docs/codex-audit-sample-report.pdf.
+- [DRDD Install](https://code-rescue.com/install): Six-to-eight-week install engagement.
+
+## Long-form
+
+- [Writing](https://code-rescue.com/writing): Notes on AI-augmented engineering, failure analysis, methodology decisions.
+- [Now](https://code-rescue.com/now): Current focus.
+- [About](https://code-rescue.com/about): Operator profile.
+
+## Contact
+
+- Email: max@code-rescue.com
+- GitHub: https://github.com/macollins27
+- RSS: https://code-rescue.com/rss.xml
