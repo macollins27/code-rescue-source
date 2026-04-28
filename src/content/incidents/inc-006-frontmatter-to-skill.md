@@ -19,7 +19,7 @@ ruleGloss: "If a persona's behavior must be reliably followed (severity calibrat
 ruleYaml: |
   # feedback_skills_over_agent_frontmatter.md (verbatim excerpt)
   #
-  # Compliance ceiling, empirically measured on PLW:
+  # Compliance ceiling, empirically measured on the engagement:
   #   Persona via agent frontmatter (system prompt)   ~80%
   #   Persona via Skill tool (user message)          ~100%
   #

@@ -43,7 +43,7 @@ message: |
   Right:  db.update(users).set({ deletedAt: new Date() }).where(...)
 
   Hard deletes destroy audit trails, break mobile sync, and violate
-  PLW Constitution (soft deletes everywhere). The ONLY exception is
+  the Constitution (soft deletes everywhere). The ONLY exception is
   session-cleanup.ts for expired auth sessions.
 
 note: "See CLAUDE.md: Never do db.delete(table) — use soft delete"

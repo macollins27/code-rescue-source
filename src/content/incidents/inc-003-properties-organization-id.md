@@ -8,9 +8,9 @@ featured: true
 cost: "Zero — caught before dispatch. Would have risked contract / legal violation if shipped."
 what: |
   <p>An Explore agent ran a schema-to-spec drift audit and found that <code class="mono" style="font-size: 13px;">packages/database/schema/properties.ts</code> declared <code class="mono" style="font-size: 13px;">organizationId NOT NULL</code>, while <code class="mono" style="font-size: 13px;">.claude/docs/domain-rules/po/properties.md</code> DR-1 stated <em>"Properties are GLOBAL records with no organizationId"</em> (reinforced by product vision lines 552–568). The audit agent surfaced this as a CTO decision with options that included <em>"rewrite DR-1 to match the schema."</em></p>
-  <p>That option does not exist in the methodology. The spec is internally consistent and contractually locked. The schema is the defendant; the rule is the spec. The user's contract with BIMS-Corp explicitly forbids changing the legacy software's business logic, and properties being global is a load-bearing capability. Treating it as a CTO judgement-call would have been a contract violation in waiting.</p>
+  <p>That option does not exist in the methodology. The spec is internally consistent and contractually locked. The schema is the defendant; the rule is the spec. The engagement contract explicitly forbids changing the legacy software's business logic, and properties being global is a load-bearing capability. Treating it as a CTO judgement-call would have been a contract violation in waiting.</p>
 how: |
-  <p>The user caught the framing in pre-dispatch review and rejected it: <em>"properties are global and this is going to get me into legal action if this is not taken seriously. i am rebuilding a legacy application called property organizer, my contract states word for word i cannot change the logic of the software."</em> The audit agent's options menu — including the "rewrite the rule" branch — was the artifact that produced the locked rule below.</p>
+  <p>Caught in pre-dispatch review. The audit agent's options menu — including the "rewrite the rule" branch — was the artifact that produced the locked rule below: an audit dispatch may classify a finding as Type 1, 2, or 3, and "reconcile spec and source" is not on the list.</p>
 ruleKind: agent-review
 ruleDisplayId: audit-agent-preamble · Type 1 / 2 / 3
 ruleSeverity: block

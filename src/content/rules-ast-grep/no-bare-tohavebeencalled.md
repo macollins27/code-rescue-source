@@ -6,7 +6,7 @@ language: typescript
 lockedOn: "2026-04-04"
 origin: "INC-002 — assertion-quality companion to the fake-tests defenses"
 verbatim: true
-gloss: "Bare positive .toHaveBeenCalled() proves the function ran but not what arguments it received. Use .toHaveBeenCalledWith() — bare form is the #1 most common test mistake in PLW."
+gloss: "Bare positive .toHaveBeenCalled() proves the function ran but not what arguments it received. Use .toHaveBeenCalledWith() — bare form is the #1 most common test mistake in the codebase."
 cites:
   - require-caller-in-tests
 ---

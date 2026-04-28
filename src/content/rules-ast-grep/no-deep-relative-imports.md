@@ -15,7 +15,7 @@ cites: []
 # Constitution Principle IV: Architecture Boundaries
 #
 # Imports with 3+ levels of ../ indicate cross-package boundary violations
-# in the PLW monorepo. Use @repo/* path aliases for cross-package imports.
+# in this monorepo. Use @repo/* path aliases for cross-package imports.
 
 id: no-deep-relative-imports
 language: typescript

@@ -15,7 +15,7 @@
   --ink: #1a1a1a;
   --ink-2: #2c2c2c;
   --ink-3: #5a5a55;
-  --ink-4: #8a8a83;
+  --ink-4: #6a6a64;
   --rule: #d8d6cc;
   --rule-2: #c4c1b3;
   --accent: #b1471c;
@@ -32,7 +32,7 @@
   --ink: #ece9dd;
   --ink-2: #d4d1c4;
   --ink-3: #a09c8c;
-  --ink-4: #6f6c5e;
+  --ink-4: #8e8b7c;
   --rule: #2f2f27;
   --rule-2: #3d3d33;
   --accent: #d8693c;
@@ -50,7 +50,7 @@
     --ink: #ece9dd;
     --ink-2: #d4d1c4;
     --ink-3: #a09c8c;
-    --ink-4: #6f6c5e;
+    --ink-4: #8e8b7c;
     --rule: #2f2f27;
     --rule-2: #3d3d33;
     --accent: #d8693c;
@@ -196,11 +196,12 @@ body { background: var(--paper); }
   font-size: 13px;
   color: var(--ink-3);
 }
-.page .footer h5 {
+.page .footer h5,
+.page .footer .footer-heading {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-weight: 500;
   margin: 0 0 10px;
 }

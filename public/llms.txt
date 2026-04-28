@@ -12,7 +12,7 @@ Every claim on the site has a source. Every rule on the site has an origin incid
 ## Methodology
 
 - [DRDD Manifesto v2](https://code-rescue.com/methodology): The methodology paper. Four commitments, twelve rules of a domain rule, two anatomy specimens (AUTH-5, PER-7). Locked 2026-04-11. ~17 minutes to read.
-- [Constitution](https://code-rescue.com/constitution): Eight non-negotiable principles. PLW v3.0.0, ratified 2026-03-16, last updated 2026-04-11. Read in two minutes; cited from every locked rule and gate by identifier.
+- [Constitution](https://code-rescue.com/constitution): Eight non-negotiable principles. v3.0.0, ratified 2026-03-16, last updated 2026-04-11. Read in two minutes; cited from every locked rule and gate by identifier.
 
 ## Rule corpus
 
