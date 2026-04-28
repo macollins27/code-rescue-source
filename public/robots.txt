@@ -1,22 +1,137 @@
+# Code Rescue — robots.txt
+# Posture: opt-in to every major AI crawler; allow all conventional search.
+#
+# Verified 2026-04-28 against primary-source crawler documentation.
+# Source-tier evidence: OpenAI's developers.openai.com/api/docs/bots,
+# Anthropic's support.claude.com, docs.perplexity.ai, Google Search
+# Central, support.apple.com.
+#
+# OAI-SearchBot is the GATING bot for ChatGPT Search citations
+# ("Sites that block this bot won't appear in ChatGPT search answers"
+# — OpenAI primary documentation).
+#
+# robots.txt precedence: explicit named groups override User-agent: *.
+# Google docs: "In case of conflicting rules, including those with
+# wildcards, Google uses the least restrictive rule."
+
 User-agent: *
 Allow: /
 
-User-agent: GPTBot
+# Conventional search
+User-agent: Googlebot
 Allow: /
 
-User-agent: ClaudeBot
+User-agent: Googlebot-News
 Allow: /
 
-User-agent: PerplexityBot
+User-agent: Googlebot-Image
 Allow: /
 
+User-agent: Bingbot
+Allow: /
+
+User-agent: msnbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Google AI training opt-in token. Blocking this does NOT affect
+# Search inclusion but DOES prevent grounding in Gemini Apps.
 User-agent: Google-Extended
 Allow: /
 
-User-agent: CCBot
+User-agent: GoogleOther
+Allow: /
+
+# OpenAI — three active bots. OAI-SearchBot gates ChatGPT Search.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic — three active bots, two deprecated strings kept for
+# defensive forward-compatibility.
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
 Allow: /
 
 User-agent: anthropic-ai
+Allow: /
+
+User-agent: claude-web
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Apple — Applebot-Extended is the training opt-out; allowing it
+# does NOT change search-result inclusion, but maximizes entity
+# attachment to Apple Intelligence.
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# DuckDuckGo AI — does not train on this data per DDG docs.
+User-agent: DuckAssistBot
+Allow: /
+
+# Meta — required for Facebook / Instagram link previews. Even
+# without targeting Meta AI prospects, the cross-platform brand
+# mentions strengthen entity-graph signal.
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+# Amazon — Nova training plus Alexa retrieval.
+User-agent: Amazonbot
+Allow: /
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+
+# Common Crawl — open web corpus that historically feeds many LLMs
+# as training-data substrate.
+User-agent: CCBot
+Allow: /
+
+# ByteDance — undocumented, no transparency, but allowed for
+# consistency with the rest.
+User-agent: Bytespider
+Allow: /
+
+# Minor / emerging
+User-agent: Diffbot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: cohere-ai
 Allow: /
 
 Sitemap: https://code-rescue.com/sitemap-index.xml
