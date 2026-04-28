@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "timeout": 30000,
+    "wait": 200,
+    "ignore": [
+      "color-contrast",
+      "WCAG2AA.Principle1.Guideline1_4.1_4_3.G18.Fail",
+      "WCAG2AA.Principle1.Guideline1_4.1_4_3.G145.Fail"
+    ],
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    }
+  },
+  "urls": [
+    "http://localhost:8080/",
+    "http://localhost:8080/methodology",
+    "http://localhost:8080/rules",
+    "http://localhost:8080/incidents",
+    "http://localhost:8080/audit",
+    "http://localhost:8080/install",
+    "http://localhost:8080/constitution",
+    "http://localhost:8080/about",
+    "http://localhost:8080/now",
+    "http://localhost:8080/writing",
+    "http://localhost:8080/rules/require-caller-in-tests",
+    "http://localhost:8080/incidents/inc-001-git-stash-disaster",
+    "http://localhost:8080/writing/2026-04-21-why-the-qa-harness-emits-over-stdio"
+  ]
+}

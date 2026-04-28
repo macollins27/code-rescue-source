@@ -68,6 +68,63 @@ jobs:
           args: --no-progress --offline --include-fragments dist/
           fail: true
 
+  lighthouse:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+  pa11y:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Serve dist
+        run: |
+          npx --yes http-server dist -p 8080 -s &
+          # Wait for the server to start
+          for i in {1..30}; do
+            if curl -sf http://localhost:8080/ > /dev/null; then
+              echo "Server ready"
+              break
+            fi
+            sleep 0.5
+          done
+
+      - name: Pa11y CI (WCAG 2.1 AA)
+        run: npx --yes pa11y-ci --config .pa11yci.json
+
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 5
