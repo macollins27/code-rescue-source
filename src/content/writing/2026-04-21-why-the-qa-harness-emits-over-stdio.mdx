@@ -13,7 +13,7 @@ It worked in unit tests. It worked in the synthetic integration tests. It did no
 
 **What was lost.** A 67-tool-call discovery run. The agent had already root-caused a CRITICAL `o.map` bug and reproduced five reference findings from the March-29 baseline. None of it survived to disk. The agent had done correct, valuable work. The emission layer ate all of it.
 
-**The user's response was unambiguous.** *"banned from dispatching another QA UNTIL YOU FIX THIS ISSUE … EVERYTHING NEEDS TO BE FIXED TOGETHER. NO DEFERRING WORK EVER."* The fix had to be architectural, not a patch.
+**The mandate was unambiguous: no further QA dispatches until the emission channel was rebuilt, and the rebuild had to ship as one body of work — no deferring it across sessions.** The fix had to be architectural, not a patch.
 
 **The fix is the title of the post.** The new emission layer is a stdio MCP server at `scripts/qa-emit-mcp.ts`. The transport is JSON-RPC over the `claude -p` subprocess's stdin and stdout. Bytes move through process pipes. There is no network socket. There is no `fetch`. There is no browser context to enforce CSP against. The thing that killed the prior implementation can no longer kill this one because the failure mode requires a policy that does not apply to this transport.
 

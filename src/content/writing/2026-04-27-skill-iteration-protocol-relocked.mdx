@@ -9,7 +9,7 @@ Between 2026-04-19 and 2026-04-25, the `/contract-feature` skill produced a cont
 
 The method was wrong.
 
-**What went wrong.** Each agent, while diagnosing the actual failure, took the opportunity to also modify parts of the skill that were not broken — for shits and giggles, was how I named it later. They cleaned up working sections. They refactored prompts that were producing correct output. They tightened wording in places where the wording was already fine. Each unjustified modification regressed something that had previously worked. The next agent inherited a worse tool, ran the pipeline, found new defects — caused by the prior agent's regressions — and repeated the pattern.
+**What went wrong.** Each agent, while diagnosing the actual failure, took the opportunity to also modify parts of the skill that were not broken. They cleaned up working sections. They refactored prompts that were producing correct output. They tightened wording in places where the wording was already fine. Each unjustified modification regressed something that had previously worked. The next agent inherited a worse tool, ran the pipeline, found new defects — caused by the prior agent's regressions — and repeated the pattern.
 
 Twenty-five iterations later, the contract had grown 5,750 → 6,708 lines, and findings had inflated from ~25 to 750+. The tool was destroyed. Six days were lost.
 
