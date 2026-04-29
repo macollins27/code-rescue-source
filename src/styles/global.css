@@ -256,3 +256,129 @@ body { background: var(--paper); }
 .page .prose p { margin: 0 0 1em; }
 .page .prose strong { color: var(--ink); font-weight: 600; }
 .page .prose code { font-family: var(--mono); font-size: 0.9em; }
+
+/* ──────────────────────────────────────────────────────────────
+   Responsive overrides
+   The site is built with inline desktop styles (grid-template-columns,
+   font sizes, padding). These rules override those patterns at narrow
+   viewports without touching every page. Attribute selectors target
+   the inline styles directly; !important is required to win specificity
+   against inline `style=""`.
+   ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  /* Collapse any inline two/three-column grid to a single column.
+     Covers the dominant patterns: "180px 1fr", "1.4fr 1fr",
+     "1.5fr 1fr", "1fr 1fr", "1fr 1fr 1fr", "180px 1fr 1fr 1fr",
+     "120px 1fr", "100px 1fr", "1.3fr 1fr", "repeat(4, 1fr)". */
+  .page [style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 24px !important;
+  }
+  /* Allow grid children to shrink and scroll their own overflow
+     (tables) rather than blowing out the viewport. */
+  .page [style*="grid-template-columns"] > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Section padding: keep horizontal margin small on mobile. */
+  .page .section,
+  .page .section.tight {
+    padding: 32px 20px;
+  }
+  /* Inline section padding overrides used in rules/[id].astro etc. */
+  .page section[style*="padding: 36px 48px"],
+  .page section[style*="padding: 56px 48px"],
+  .page [style*="padding: 36px 48px"],
+  .page [style*="padding: 56px 48px"] {
+    padding: 32px 20px !important;
+  }
+
+  /* Hero headlines — clamp the inline desktop sizes. */
+  .page h1[style*="font-size: 56px"] { font-size: 34px !important; }
+  .page h1[style*="font-size: 44px"] { font-size: 28px !important; }
+  .page h1[style*="font-size: 36px"] { font-size: 26px !important; }
+  .page h1[style*="font-size: 34px"] { font-size: 24px !important; }
+  .page h1[style*="font-size: 32px"] { font-size: 24px !important; }
+  .page h2[style*="font-size: 22px"] { font-size: 19px !important; }
+
+  /* Nav: let the link list wrap onto its own line. */
+  .page .nav {
+    padding: 14px 20px;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+  .page .nav ul {
+    flex: 1 0 100%;
+    justify-content: flex-start;
+    gap: 12px 18px;
+    flex-wrap: wrap;
+    white-space: normal;
+    order: 3;
+  }
+  .page .nav .meta { display: none; }
+
+  /* Footer: 2-up on tablet, 1-up on phone (handled below). */
+  .page .footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 20px;
+    padding: 28px 20px 24px;
+  }
+  .page .footer .stamp {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    margin-top: 8px;
+  }
+
+  /* Tables: switch the table itself to a block-scrolling box so wide
+     tables (rules / audit / install) scroll horizontally inside their
+     own column instead of pushing the page wider than the viewport.
+     The inner thead/tbody/tr/td retain table-internal display values
+     and the browser generates anonymous table boxes around them, so
+     column widths still align between header and body. */
+  .page table.data {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    font-size: 12.5px;
+  }
+  .page table.data th,
+  .page table.data td {
+    padding: 8px 10px 8px 0;
+    overflow-wrap: anywhere;
+  }
+  /* Defensive clamp: keep horizontal overflow inside .page so a runaway
+     element can't blow out the document scrollbar. Tables still scroll
+     internally because they have overflow-x: auto above. */
+  .page { overflow-x: clip; }
+
+  /* Code blocks: scale type and pad. */
+  .page pre.code {
+    font-size: 11.5px;
+    padding: 12px;
+  }
+
+  /* Padded card blocks (audit page fake-report) */
+  .page [style*="padding: 36px"] { padding: 20px !important; }
+  .page [style*="padding: 24px"] { padding: 16px !important; }
+
+  /* Prose: drop max-width clamp safely. */
+  .page .prose { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  .page .footer { grid-template-columns: 1fr; }
+  .page .nav .brand { font-size: 15px; }
+  .page table.data { font-size: 12px; }
+
+  .page h1[style*="font-size: 56px"] { font-size: 30px !important; }
+  .page h1[style*="font-size: 44px"] { font-size: 25px !important; }
+  .page h1[style*="font-size: 36px"] { font-size: 23px !important; }
+  .page h1[style*="font-size: 34px"] { font-size: 22px !important; }
+  .page h1[style*="font-size: 32px"] { font-size: 22px !important; }
+}
