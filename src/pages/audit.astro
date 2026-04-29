@@ -12,7 +12,7 @@ const jsonLd = [
   service({
     name: 'DRDD Audit',
     description:
-      'A 30-to-43 page technical due-diligence audit. Read-only. Five business days. Source-first findings, full RAG matrix, remediation roadmap, partner-ready PDF.',
+      'A 30-to-43 page technical due-diligence audit. Read-only. Five business days. Source-evidence findings, full RAG matrix, remediation roadmap, partner-ready PDF.',
     serviceType: 'Technical Due Diligence',
     priceMin: 25000,
     priceMax: 40000,
@@ -325,7 +325,7 @@ const jsonLd = [
         <tbody>
           <tr><td class="mono">D-3</td><td>NDA, repo access, scope lock</td><td>Standard NDA. Read-only deploy key. Stack and module list. Anything you want me to ignore.</td><td class="mono" style="text-align: right;">~30 min</td></tr>
           <tr><td class="mono">1</td><td>Topology + scoring frame</td><td>Whole-repo read. Domain weighting set against your industry and stage. Initial RAG hypothesis.</td><td class="mono" style="text-align: right; color: var(--ink-4);">—</td></tr>
-          <tr><td class="mono">2</td><td>Source-first findings pass</td><td>Every finding lands with a file + line. AST-grep + hookify rule corpus run as a first sweep.</td><td class="mono" style="text-align: right; color: var(--ink-4);">—</td></tr>
+          <tr><td class="mono">2</td><td>Source-evidence findings pass</td><td>Every finding lands with a file + line. AST-grep + hookify rule corpus run as a first sweep.</td><td class="mono" style="text-align: right; color: var(--ink-4);">—</td></tr>
           <tr><td class="mono">3</td><td>Adversarial review</td><td>Nine-pass review per domain. Findings either survive with stronger evidence or get cut.</td><td class="mono" style="text-align: right; color: var(--ink-4);">—</td></tr>
           <tr><td class="mono">4</td><td>Remediation costing</td><td>Hours per finding × confidence. Bucketed Immediate / 100-day / 6–12 month with cost band.</td><td class="mono" style="text-align: right;">~45 min Q&amp;A</td></tr>
           <tr><td class="mono">5</td><td>Report + walkthrough</td><td>Final PDF. 60-min walkthrough with your deal team. One round of Q&amp;A by email afterward.</td><td class="mono" style="text-align: right;">60 min</td></tr>

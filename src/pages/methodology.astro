@@ -169,23 +169,35 @@ expect(error.message).toBe("<Entity> not found");
             <table class="data" style="font-size: 13px; margin-top: 4px;">
               <tbody>
                 <tr>
-                  <td class="mono" style="width: 22%; color: var(--accent);">Write‑time</td>
-                  <td>hookify rule blocks the string <code class="mono" style="font-size: 12px;">FORBIDDEN "Access denied"</code> in any procedure file.</td>
+                  <td class="mono" style="width: 22%; color: var(--accent);">Keystroke</td>
+                  <td>hookify rule blocks the string <code class="mono" style="font-size: 12px;">FORBIDDEN "Access denied"</code> as the agent types it in any procedure file.</td>
                 </tr>
                 <tr>
-                  <td class="mono" style="color: var(--accent);">Gate‑time</td>
-                  <td>static‑analysis rule requires <code class="mono" style="font-size: 12px;">organizationId</code> in every WHERE clause touching an organization‑scoped table.</td>
+                  <td class="mono" style="color: var(--accent);">Gate</td>
+                  <td>ast‑grep rule requires <code class="mono" style="font-size: 12px;">organizationId</code> in every WHERE clause touching an organization‑scoped table; commit blocked if missing.</td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color: var(--accent);">Test</td>
+                  <td>every domain's procedure test file asserts cross‑org probe → <code class="mono" style="font-size: 12px;">NOT_FOUND</code>; failing assertion blocks CI.</td>
                 </tr>
                 <tr>
                   <td class="mono" style="color: var(--accent);">Runtime</td>
-                  <td>middleware verifies session and active organization before procedure body executes.</td>
+                  <td>middleware executes the canonical join and throws <code class="mono" style="font-size: 12px;">NOT_FOUND</code> on zero rows before the procedure body runs.</td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color: var(--accent);">Review</td>
+                  <td>structured source review pass audits source against the rule prose and flags any FORBIDDEN/NOT_FOUND drift as a finding.</td>
+                </tr>
+                <tr>
+                  <td class="mono" style="color: var(--accent);">QA</td>
+                  <td>Playwright flow probes a cross‑org request live in a real browser; the response shape is asserted to be indistinguishable from a never‑existed entity.</td>
                 </tr>
               </tbody>
             </table>
           </AnatomySlot>
 
           <AnatomySlot label="Violation closed">
-            Three distinct failure cases — entity does not exist, entity was soft‑deleted, entity belongs to another organization — collapse into a single response. A probing client observes identical output for all three. Enumeration across organizational boundaries ceases to be possible. The rule turns a class of information‑disclosure vulnerability into a form the attacker cannot distinguish from a correctly‑operating system.
+            Three distinct failure cases — entity does not exist, entity was soft‑deleted, entity belongs to another organization — collapse into a single response. A probing client observes identical output for all three. Enumeration across organizational boundaries ceases to be possible. The rule turns a class of information‑disclosure vulnerability into a form the attacker cannot distinguish from a correctly‑operating system. Six independent enforcement layers, one rule citation; bypassing any one requires bypassing all six.
           </AnatomySlot>
         </div>
 

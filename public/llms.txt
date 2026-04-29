@@ -4,7 +4,7 @@
 
 Two productized engagements:
 
-- **DRDD-A (Audit)** — five-day source-first technical due-diligence audit. $25–40K. Read-only repo access. 30-43 page PDF deliverable, partner-ready.
+- **DRDD-A (Audit)** — five-day source-evidence technical due-diligence audit. $25–40K. Read-only repo access. 30-43 page PDF deliverable, partner-ready.
 - **DRDD-I (Install)** — six-to-eight-week install of the methodology in a client's repo. $80–150K. Constitution, gates, hooks, ast-grep + hookify rule packs, QA harness, dispatch protocol, agent-review hooks.
 
 Every claim on the site has a source. Every rule on the site has an origin incident. Every incident has a date, a session id, and a locked rule that now blocks recurrence.
