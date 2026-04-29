@@ -246,6 +246,12 @@ body { background: var(--paper); }
 .page .two-col { display: grid; grid-template-columns: 220px 1fr; gap: 48px; }
 .page .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
 
+/* CSS grid items default to min-width: auto (= min-content), so a child
+   containing a non-wrapping <pre>/code line stretches its column to fit
+   the longest token and blows out the layout. Allow children to shrink
+   below their min-content; the child's own overflow:auto then scrolls. */
+.page [style*="grid-template-columns"] > * { min-width: 0; }
+
 .page .prose {
   font-family: var(--serif);
   font-size: 17px;
@@ -275,10 +281,9 @@ body { background: var(--paper); }
     grid-template-columns: minmax(0, 1fr) !important;
     gap: 24px !important;
   }
-  /* Allow grid children to shrink and scroll their own overflow
-     (tables) rather than blowing out the viewport. */
+  /* At narrow viewports, also clamp children to viewport width so a
+     fixed-pixel column-track or padded card can't overshoot. */
   .page [style*="grid-template-columns"] > * {
-    min-width: 0;
     max-width: 100%;
   }
 
@@ -332,35 +337,96 @@ body { background: var(--paper); }
     margin-top: 8px;
   }
 
-  /* Tables: switch the table itself to a block-scrolling box so wide
-     tables (rules / audit / install) scroll horizontally inside their
-     own column instead of pushing the page wider than the viewport.
-     The inner thead/tbody/tr/td retain table-internal display values
-     and the browser generates anonymous table boxes around them, so
-     column widths still align between header and body. */
+  /* Tables.
+     Two-column tables (label / value pairs in heros, etc.) collapse
+     fine in a 375px column. The problem is 4+ column tables: with
+     overflow-wrap: anywhere they squeeze each cell to a single
+     character and wrap text vertically letter-by-letter. Fix:
+     - 2/3-column tables stay as display: table with smaller font.
+     - 4+ column tables (detected via :has()) become a horizontally-
+       scrolling block whose inner row groups are forced to
+       max-content width, so columns size to their natural content
+       and the table scrolls inside its own box. */
   .page table.data {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    max-width: 100%;
-    width: 100%;
-    min-width: 0;
     font-size: 12.5px;
+    max-width: 100%;
   }
   .page table.data th,
   .page table.data td {
     padding: 8px 10px 8px 0;
+  }
+  /* Allow long tokens (file paths, identifiers) to break in narrow cells
+     without forcing every word to letter-wrap. */
+  .page table.data td .mono,
+  .page table.data td.mono,
+  .page table.data td a {
     overflow-wrap: anywhere;
+  }
+  .page table.data:has(th:nth-child(3)),
+  .page table.data:has(tbody > tr:first-child > td:nth-child(3)) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    /* Right-edge fade hints at horizontal scroll. */
+    background:
+      linear-gradient(to right, var(--paper) 30%, transparent),
+      linear-gradient(to right, transparent, var(--paper) 70%) 100% 0,
+      radial-gradient(farthest-side at 0 50%, rgba(0,0,0,0.08), transparent),
+      radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.08), transparent) 100% 0;
+    background-repeat: no-repeat;
+    background-size: 24px 100%, 24px 100%, 12px 100%, 12px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+  .page table.data:has(th:nth-child(3)) > thead,
+  .page table.data:has(th:nth-child(3)) > tbody,
+  .page table.data:has(tbody > tr:first-child > td:nth-child(3)) > thead,
+  .page table.data:has(tbody > tr:first-child > td:nth-child(3)) > tbody {
+    display: table;
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+  }
+
+  /* Inline <code> with no soft-break points (e.g. Number.MAX_SAFE_INTEGER)
+     will overflow the line. Allow break-anywhere on inline code only. */
+  .page p code,
+  .page li code,
+  .page .prose code,
+  .page .serif code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
   /* Defensive clamp: keep horizontal overflow inside .page so a runaway
      element can't blow out the document scrollbar. Tables still scroll
      internally because they have overflow-x: auto above. */
   .page { overflow-x: clip; }
 
-  /* Code blocks: scale type and pad. */
+  /* Code blocks: scale type, pad, and signal horizontal scroll with a
+     right-edge fade so cut-off content doesn't read as broken. */
   .page pre.code {
     font-size: 11.5px;
     padding: 12px;
+    background:
+      linear-gradient(to right, var(--paper-2) 30%, transparent),
+      linear-gradient(to right, transparent, var(--paper-2) 70%) 100% 0,
+      radial-gradient(farthest-side at 0 50%, rgba(0,0,0,0.08), transparent),
+      radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,0.08), transparent) 100% 0;
+    background-color: var(--paper-2);
+    background-repeat: no-repeat;
+    background-size: 24px 100%, 24px 100%, 12px 100%, 12px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+
+  /* Multi-column footnotes / lists collapse to one column at narrow widths. */
+  .page [style*="column-count"] {
+    column-count: 1 !important;
+  }
+
+  /* Horizontal flex rows (anchor nav strips, pill rows) wrap at narrow
+     widths so children stack rather than overflow. */
+  .page [style*="display: flex"]:not(.nav):not(.footer) {
+    flex-wrap: wrap;
   }
 
   /* Padded card blocks (audit page fake-report) */
